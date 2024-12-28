@@ -1,0 +1,76 @@
+:root {
+  --bg-main: #0f380f; /* Deep green for the main background */
+  --bg-sidebar: #306230; /* Darker green for the sidebar */
+  --bg-accordion: #8bac0f; /* Light green for the accordion background */
+  --bg-accordion-header: #9bbc0f; /* Bright green for accordion headers */
+  --bg-accordion-content: #0f380f; /* Deep green for accordion content */
+  --bg-button: #306230; /* Darker green for buttons */
+  --bg-button-hover: #8bac0f; /* Light green for button hover state */
+  --bg-input: #0f380f; /* Deep green for input fields */
+  --bg-tab: #9bbc0f; /* Bright green for tabs */
+  --text-color: #ffffff; /* White for text for better contrast */
+  --text-accordion: #ffffff; /* White for accordion text */
+  --text-button: #ffffff; /* White for button text */
+  --text-tab: #ffffff; /* White for tab text */
+  --border-color: #9bbc0f; /* Bright green for borders */
+  --border-focus: #306230; /* Darker green for focus border */
+  --border-accordion: #9bbc0f; /* Bright green for accordion borders */
+  --accordion-bg-hover: #80c904; /* Slightly lighter green when hovering over accordion header */
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-color);
+}
+
+.sidebar {
+  background-color: var(--bg-sidebar);
+}
+
+.accordion {
+  background-color: var(--bg-accordion);
+}
+
+.accordion-header {
+  background-color: var(--bg-accordion-header);
+  color: var(--text-accordion);
+}
+
+.accordion-header:hover {
+  background-color: var(--accordion-bg-hover);
+}
+
+.accordion-content {
+  background-color: var(--bg-accordion-content);
+  color: var(--text-accordion);
+}
+
+.button {
+  background-color: var(--bg-button);
+  color: var(--text-button);
+}
+
+.button:hover {
+  background-color: var(--bg-button-hover);
+}
+
+.form-input {
+  background-color: var(--bg-input);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.form-input:focus {
+  border-color: var(--border-focus);
+}
+
+.tab-button {
+  background-color: var(--bg-tab);
+  color: var(--text-tab);
+}
+
+.accordion-item {
+  border: 1px solid var(--border-accordion);
+}
+
+/* Define additional styles as needed */

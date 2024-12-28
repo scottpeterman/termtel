@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Velociterm - {{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/theme-{{ theme }}.css">
+    <link rel="stylesheet" href="/static/css/xterm.css" />
+    <script src="/static/js/xterm.js"></script>
+    <script src="/static/js/xterm-addon-fit.js"></script>
+    <style>
+        .xterm {
+            width: 98vw;
+            height: 95vh;
+            overflow: hidden;
+        }
+        /* Add additional styles or overrides here */
+    </style>
+</head>
+
+<body class="bg-main text-color">
+
+<!-- Left Side: Session List and Quick Connect Form -->
+
+<div class="flex flex-col md:flex-row h-screen">
+    <div class="sidebar bg-sidebar md:w-1/4 p-4 overflow-y-auto">
+        <div class="mb-4">
+            <input class="search-input form-input px-4 py-2 rounded text-input w-full" type="text" placeholder="Search sessions...">
+        </div>
+        <div class="accordion bg-accordion mb-6 p-4 rounded-lg space-y-2">
+            <!-- Accordion sections -->
+            <!-- Session Accordion for USA-1 -->
+            <div class="border border-accordion rounded">
+                <button class="accordion-header w-full bg-accordion-header text-accordion p-2 flex justify-between items-center rounded">
+                    <span>USA-1</span>
+                </button>
+                <div class="accordion-content bg-accordion-content text-white p-2 hidden">
+                    Details for USA-1...
+                </div>
+            </div>
+            <!-- Session Accordion for USA-2 -->
+            <div class="border border-accordion rounded">
+                <button class="accordion-header w-full bg-accordion-header text-accordion p-2 flex justify-between items-center rounded">
+                    <span>USA-2</span>
+                </button>
+                <div class="accordion-content bg-accordion-content text-white p-2 hidden">
+                    Details for USA-2...
+                </div>
+            </div>
+        </div>
+        <div class="quick-connect bg-quick-connect p-4 rounded-lg">
+            <!-- Quick Connect Form -->
+            <form id="quick-connect-form" class="flex flex-col space-y-2">
+                <input type="text" id="host" placeholder="Host" class="form-input px-4 py-2 rounded bg-input border border-outline text-white">
+                <input type="text" id="port" placeholder="Port" class="form-input px-4 py-2 rounded bg-input border border-outline text-white" value="22">
+                <input type="text" id="username" placeholder="Username" class="form-input px-4 py-2 rounded bg-input border border-outline text-white">
+                <input type="password" id="password" placeholder="Password" class="form-input px-4 py-2 rounded bg-input border border-outline text-white">
+                <button type="submit" class="button bg-button hover:bg-button-hover text-white">Connect</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Right Side: Terminal Tabs -->
+    <!-- Main Content Section -->
+    <div class="main-content flex-1 p-4">
+        <div class="terminal-control bg-terminal-control p-4 rounded">
+            <!-- Tab Headers -->
+            <nav class="tab-headers flex border-b">
+                <!-- Dynamically added tabs will appear here -->
+            </nav>
+            <!-- Tab Contents -->
+            <div class="tab-contents">
+                <!-- Dynamically added tab contents with xterm will appear here -->
+            </div>
+        </div>
+    </div>
+    <!-- End of Main Content Section -->
+</div>
+
+<script>
+    // Global variables
+    let tabCounter = 0;
+    let terminals = {};
+
+    // Debounce function to limit the frequency of resize calls
+    function debounce(func, timeout = 300){
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+    }
+</script>
+
+
+<script>
+    // Function to create and open a new terminal
+    function createTerminal(tabId) {
+        // Create a new div element for the terminal within the tab content
+        const terminalContainer = document.createElement('div');
+        terminalContainer.classList.add('xterm');
+        terminalContainer.setAttribute('id', 'terminal-container-' + tabId);
+        terminalContainer.style.border = '2px solid red'; // You can change the color and style as needed
+        terminalContainer.style.margin = '10px'; // Optional, for better spacing
+
+        // Get the tab content area by tabId and append the terminal container to it
+        const tabContent = document.getElementById(tabId);
+        tabContent.appendChild(terminalContainer);
+
+        // Create a new Terminal instance
+        const term = new Terminal();
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+
+        // Open the terminal in the container
+        term.open(terminalContainer);
+        let initialResize = false;
+
+        // Function to handle terminal resize
+        function handleTerminalResize() {
+            if (terminalContainer.offsetWidth > 0 && terminalContainer.offsetHeight > 0) {
+                fitAddon.fit();
+                const { cols, rows } = term;
+                if (initialResize) {
+                    // sendToWebSocket(JSON.stringify({ type: 'resize', cols, rows }));
+                } else {
+                    initialResize = true;
+                }
+            }
+        }
+
+        // Debounced resize function
+        const debouncedResize = debounce(() => handleTerminalResize());
+
+        // Resize observer for the terminal container
+        const resizeObserver = new ResizeObserver(() => debouncedResize());
+        resizeObserver.observe(terminalContainer);
+
+        // Event listener for window resize
+        window.addEventListener('resize', debouncedResize);
+
+        return term; // Return the terminal instance
+    }
+</script>
+
+<script>
+    // Function to add a new tab
+    Copy code
+    function addTab(host) {
+        const tabId = 'tab-' + (++tabCounter); // Unique ID for the tab
+        const terminalContainerId = 'terminal-container-' + tabCounter; // Unique ID for the terminal container
+
+        // Accessing the tab headers and contents areas
+        const tabHeaders = document.querySelector('.tab-headers');
+        const tabContents = document.querySelector('.tab-contents');
+
+        // Create new tab button
+        const newTab = document.createElement('button');
+        newTab.className = 'tab-button py-2 px-4 bg-tab text-white rounded-t focus:outline-none';
+        newTab.textContent = host; // Text for the tab, using the host name
+        newTab.dataset.tabTarget = tabId; // Data attribute to link the tab button with its content
+        tabHeaders.appendChild(newTab); // Append the new tab to the tab headers section
+
+        // Create new tab content area
+        const newContent = document.createElement('div');
+        newContent.id = tabId; // Assign the unique tab ID
+        newContent.className = 'hidden p-4 xterm-container'; // Initial styling and hidden state
+        tabContents.appendChild(newContent); // Append the new content area to the tab contents section
+
+        // Add a header text for the terminal
+        const headerText = document.createElement('h2');
+        headerText.textContent = `Terminal for ${host}`;
+        headerText.style.color = 'white'; // Set the color or any other styling as needed
+        newContent.appendChild(headerText); // Append the header text to the tab content area
+
+        // Create a container div inside the new content area for the terminal
+        const terminalContainer = document.createElement('div');
+        terminalContainer.id = terminalContainerId; // Assign the unique terminal container ID
+        newContent.appendChild(terminalContainer);
+        // Event listener for the new tab button
+        newTab.addEventListener('click', function() {
+            const target = this.dataset.tabTarget;
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-contents > div').forEach(div => div.classList.add('hidden'));
+            this.classList.add('active');
+            const targetElement = document.getElementById(target);
+            targetElement.classList.remove('hidden');
+            if (terminals[target]) {
+                terminals[target].fit(); // Resize the terminal to fit the newly visible container
+            }
+        });
+
+        // Create and store the terminal in the new container
+        terminals[tabId] = createTerminal(terminalContainerId);
+    }
+</script>
+
+
+<script>
+    // Accordion toggle
+    document.querySelectorAll('.accordion-header').forEach(button => {
+        button.addEventListener('click', () => {
+            const accordionContent = button.nextElementSibling;
+            accordionContent.classList.toggle('hidden');
+        });
+    });
+
+    // Event listener for quick connect form submission
+    document.getElementById('quick-connect-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Get form values
+        const host = document.getElementById('host').value;
+        const port = document.getElementById('port').value;
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // TODO: Implement your connection logic here
+
+        // Create a new tab for the connection
+        addTab(host);
+    });
+
+    // Event listener for DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize a default tab or any initial setup if necessary
+        // Example: addTab("Initial Tab");
+    });
+</script>
+
+</body>
+</html>

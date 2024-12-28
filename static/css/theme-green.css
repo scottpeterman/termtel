@@ -1,0 +1,73 @@
+:root {
+  --bg-main: #101010;
+  --bg-sidebar: #306230;
+  --bg-accordion: #8bac0f;
+  --bg-accordion-header: #9bbc0f;
+  --bg-accordion-content: #0f380f;
+  --bg-button: #306230;
+  --bg-button-hover: #8bac0f;
+  --bg-input: #0f380f;
+  --bg-tab: #9bbc0f;
+  --text-color: #0f380f;
+  --text-accordion: #306230;
+  --text-button: #0f380f;
+  --text-tab: #0e0e0e;
+  --border-color: #9bbc0f;
+  --border-focus: #306230;
+}
+
+/* No other CSS rules are necessary - the variables do all the work */
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-color);
+  /* ... */
+}
+
+.sidebar {
+  background-color: var(--bg-sidebar);
+  /* ... */
+}
+
+.accordion-header {
+  background-color: var(--bg-accordion-header);
+  /* ... */
+}
+
+.accordion-content {
+  background-color: var(--bg-accordion-content);
+  color: var(--text-accordion);
+  /* ... */
+}
+
+.button {
+  background-color: var(--bg-button);
+  color: var(--text-button);
+  /* ... */
+}
+
+.button:hover {
+  background-color: var(--bg-button-hover);
+  /* ... */
+}
+
+.form-input {
+  background-color: var(--bg-input);
+  border-color: var(--border-color);
+  color: var(--text-color);
+  /* ... */
+}
+
+.form-input:focus {
+  outline: 2px solid var(--border-focus);
+  box-shadow: none;
+  /* ... */
+}
+
+.tab-button {
+  background-color: var(--bg-tab);
+  color: var(--text-tab);
+  /* ... */
+}
+
+/* Additional styles would go here */

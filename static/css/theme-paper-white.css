@@ -1,0 +1,228 @@
+:root {
+  --bg-main: #fdfdfd; /* Very light grey, almost white, for the main background */
+  --bg-sidebar: #f0f0f0; /* Light grey for the sidebar */
+  --bg-accordion: #e7e7e7; /* Slightly darker grey for the accordion background */
+  --bg-accordion-header: #dedede; /* Even darker grey for accordion headers */
+  --bg-accordion-content: #fdfdfd; /* Same as main background for content */
+  --bg-button: #d1d1d1; /* Light grey for buttons */
+  --bg-button-hover: #c2c2c2; /* Slightly darker grey for button hover state */
+  --bg-input: #ffffff; /* White for input fields */
+  --bg-tab: #e7e7e7; /* Same as accordion for tabs */
+  --text-color: #333333; /* Dark grey for text for contrast */
+  --text-accordion: #333333; /* Same as general text for accordion text */
+  --text-button: #333333; /* Same as general text for button text */
+  --text-tab: #333333; /* Same as general text for tabs */
+  --border-color: #aaaaaa; /* Grey for borders */
+  --border-focus: #888888; /* Slightly darker grey for focus border */
+}
+
+
+/* No other CSS rules are necessary - the variables do all the work */
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-color);
+  /* ... */
+}
+
+.custom-bg-color {
+  background-color: var(--bg-sidebar); /* Use your chosen variable color */
+}
+
+#tab-contents {
+  position: relative; /* if you need it for positioning */
+  background-color: var(--bg-main); /* or any other color variable you've defined */
+  /* ... other styles you may have ... */
+}
+
+.sidebar {
+  background-color: var(--bg-sidebar);
+  /* ... */
+}
+
+/* Accordion styles... /
+.accordion-header {
+background-color: var(--bg-accordion-header);
+/ ... */
+
+
+.accordion-content {
+  background-color: var(--bg-accordion-content);
+  color: var(--text-accordion);
+  /* ... */
+}
+
+/* Button styles... /
+.button {
+background-color: var(--bg-button);
+color: var(--text-button);
+/ ... */
+
+
+.button:hover {
+  background-color: var(--bg-button-hover);
+  /* ... */
+}
+
+/* Input styles... /
+.form-input {
+background-color: var(--bg-input);
+border-color: var(--border-color);
+color: var(--text-color);
+/ ... */
+
+
+.form-input:focus {
+  outline: 2px solid var(--border-focus);
+  box-shadow: none;
+  /* ... */
+}
+
+/* Tab button styles... /
+.tab-button {
+background-color: var(--bg-tab);
+color: var(--text-tab-inactive);
+/ ... */
+
+
+/*.tab-button.active-button {*/
+/*  background-color: var(--bg-tab-active);*/
+/*  color: var(--text-tab);*/
+/*  !* ... *!*/
+/*}*/
+
+/* Terminal styles... /
+.terminal {
+background-color: var(--bg-terminal);
+color: var(--text-color);
+/ ... */
+/* Apply the above variables to style the tab components */
+.tab-button {
+  background-color: var(--bg-tab);
+  color: var(--text-tab-inactive);
+  padding: 0.5em 1em;
+  margin-right: 0.5em;
+  border: 1px solid var(--border-color);
+  border-bottom: none; /* Remove bottom border for a tab effect */
+  border-radius: 5px 5px 0 0; /* Rounded corners on top */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tab-button:hover {
+  background-color: var(--bg-button-hover);
+}
+
+.tab-button.active-button {
+  background-color: var(--bg-tab-active);
+  color: var(--text-tab);
+  border-bottom: 1px solid var(--bg-main); /* Match the main background for active tab */
+}
+
+#tab-contents {
+  border: 1px solid var(--border-color);
+}
+
+/* Ensure the active tab content stands out */
+.active-tab {
+  border-top: none; /* Align with active tab */
+}
+
+/* Style the tab bar container */
+#tab-buttons {
+  background-color: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-color);
+}
+/* Style for the content within the tabs /
+.tab-content {
+background-color: var(--bg-terminal); / Terminal-like background for content /
+color: var(--text-color); / Text color for content /
+padding: 1em;
+border-radius: 0 0 5px 5px; / Rounded corners at the bottom /
+display: none; / By default, content is hidden */
+
+/* Display the active content */
+.active-tab .tab-content {
+  display: block;
+}
+
+/* Input fields styles */
+.form-input {
+  background-color: var(--bg-input); /* Already set to match sidebar */
+  color: var(--text-color); /* Soft off-white text for readability */
+  border-color: var(--border-color); /* Dark forest green borders */
+  /* ... other styles ... */
+}
+
+.form-input:focus {
+  outline: 2px solid var(--border-focus); /* Brighter green for focus */
+  /* ... other styles ... */
+}
+
+/* Connect button styles */
+.button {
+  background-color: var(--bg-button); /* Adjusted green */
+  color: var(--text-button); /* White text */
+  /* ... other styles ... */
+}
+
+.button:hover {
+  background-color: var(--bg-button-hover); /* Brighter green on hover */
+  /* ... other styles ... */
+}
+
+/* Search input styles */
+.search-input {
+  border: 1px solid var(--border-color); /* Dim forest green outline */
+  /* ... other styles ... */
+}
+
+.search-input {
+  border: none; /* Remove all borders */
+  border-bottom: 2px solid var(--border-color); /* Apply border only at the bottom */
+  background-color: var(--bg-input); /* Keep the background color */
+  color: var(--text-color); /* Keep the text color */
+  /* ... other styles ... */
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #306230FF;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #306230FF;
+}
+
+/* Styles for Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #306230FF #000000;
+}
+.bg-light, .bg-white {
+  background-color: #000 !important; /* Use !important to override Bootstrap's styles */
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-terminal);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-thumb-active);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-main);
+}

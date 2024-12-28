@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Terminal</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- External CSS for xterm and fullscreen -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/xterm.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/fullscreen.css') }}" />
+    <!-- Theme CSS determined by Jinja variable -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/theme-' + theme + '.css') }}">
+    <!-- External JavaScript files -->
+    <script src="{{ url_for('static', path='/js/xterm.js') }}"></script>
+    <script src="{{ url_for('static', path='/js/xterm-addon-fit.js') }}"></script>
+    <style>
+        #terminal {
+            width: 98vw;   /* 100% of the viewport width */
+            height: 95vh;  /* 100% of the viewport height */
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal"></div>
+    <script>
+        // Get SSH connection details from the server
+        const hostname = "{{hostname}}";
+        const username = "{{username}}";
+        const password = "{{password}}";
+        const port = "22"; // If you are using port from the server
+        initialResize = false;
+    </script>
+    <script src="{{ url_for('static', path='/js/custom.js') }}"></script>
+</body>
+</html>

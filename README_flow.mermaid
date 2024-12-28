@@ -1,0 +1,61 @@
+sequenceDiagram
+    participant U as User
+    participant UI as GuiPasswordDialog
+    participant B as Bridge
+    participant SC as SecureCredentials
+    participant PS as Platform Storage
+    participant SK as System Keyring
+    participant ST as Storage (YAML/SQLite)
+
+    %% Initialization Flow
+    U->>UI: Launch Application
+    UI->>SC: Check Initialization
+
+    alt Not Initialized
+        SC->>UI: Request Master Password
+        U->>UI: Provide Master Password
+        UI->>B: submitPassword()
+        B->>SC: setup_new_credentials()
+        SC->>SC: Generate Salt
+        SC->>SC: Derive Key (PBKDF2)
+        SC->>PS: Store Salt
+        SC->>SK: Store Machine ID
+        SC->>ST: Create Empty Store
+        SC-->>B: Success
+        B-->>UI: Accept Dialog
+    else Already Initialized
+        SC->>UI: Request Unlock
+        U->>UI: Provide Master Password
+        UI->>B: submitPassword()
+        B->>SC: unlock()
+        SC->>SK: Verify Machine ID
+        SC->>PS: Load Salt
+        SC->>SC: Derive Key
+        SC->>ST: Test Decryption
+
+        alt Unlock Success
+            SC-->>B: Success
+            B-->>UI: Accept Dialog
+        else Unlock Failed
+            SC-->>B: Failure
+            B-->>UI: Show Error
+            UI->>U: Display Error
+        end
+    end
+
+    %% Credential Operations
+    Note over U,ST: After Successful Initialization/Unlock
+
+    alt Add Credential
+        U->>SC: Add Credential
+        SC->>SC: Encrypt Data
+        SC->>ST: Store Encrypted Data
+        ST-->>SC: Confirm Storage
+        SC-->>U: Success
+    else Retrieve Credential
+        U->>SC: Get Credential
+        SC->>ST: Load Encrypted Data
+        ST-->>SC: Return Data
+        SC->>SC: Decrypt Data
+        SC-->>U: Return Credential
+    end

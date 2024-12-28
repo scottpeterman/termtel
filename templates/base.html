@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Velociterm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/velociterm.css" />
+    <link rel="stylesheet" href="/static/css/{{ theme }}">
+    <link rel="stylesheet" href="/static/css/xterm.css" />
+    <script src="/static/js/xterm.js"></script>
+    <script src="/static/js/xterm-addon-fit.js"></script>
+    <style>
+        .accordion {
+            max-height: 20vw; /* Sets the maximum height to 50% of the viewport height */
+            overflow-y: auto; /* Adds a scrollbar if the content exceeds the max height */
+            border: 1px solid;
+            border-radius: 0px;
+            border-color: var(--border-color);
+
+            padding: 1px;
+        }
+        .quick-connect-header {
+            border: 3px solid; /* Example border */
+            border-color: var(--border-color);
+            padding: 1px; /* Padding inside the div */
+            margin-bottom: 5px; /* Margin below the div */
+
+            text-align: center; /* Center the text */
+            /* Add more styling as needed */
+        }
+
+        .search-results {
+            width: 90vw; /* Adjust the width as needed, using vw for viewport width */
+            max-height: 80vh; /* Set a maximum height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border-collapse: collapse;
+            background-color: var(--bg-main); /* Set background color to match theme */
+            color: var(--text-color); /* Set text color to match theme */
+        }
+        .search-results-table {
+            width: 85vw; /* Adjust the width as needed, using vw for viewport width */
+            max-height: 75vh; /* Set a maximum height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border-collapse: collapse;
+            background-color: var(--bg-main); /* Set background color to match theme */
+            color: var(--text-color); /* Set text color to match theme */
+        }
+        /* You might want to style the table header to match your theme */
+        .search-results thead th {
+            background-color: var(--bg-accordion-header); /* Set header background color to match theme */
+            color: var(--text-color); /* Set header text color to match theme */
+        }
+
+        /* Ensure the connect button aligns with the theme */
+        .connect-btn {
+            background-color: var(--bg-button); /* Use theme variable for background */
+            /* ... other styles ... */
+        }
+
+        .connect-btn:hover {
+            background-color: var(--bg-button-hover); /* Use theme variable for hover */
+            /* ... other styles ... */
+        }
+        .search-results thead th {
+            background-color: var(--bg-accordion-header); /* Use a contrasting color */
+            color: var(--text-color); /* Ensure it's visible against the background */
+        }
+        .search-results td {
+            border: 1px solid var(--border-color); /* Use theme variable for borders */
+            padding: 8px;
+            text-align: left;
+        }
+
+        .search-results th {
+            background-color: var(--bg-accordion-header); /* Use theme variable for header background */
+            color: var(--text-color); /* Use theme variable for text color */
+        }
+
+        .search-results tbody tr:nth-child(odd) {
+            background-color: var(--bg-accordion); /* Use theme variable for zebra striping */
+        }
+        .search-results th.device-type,
+        .search-results td.device-type,
+        .search-results th.model,
+        .search-results td.model {
+            max-width: 150px; /* or whatever max-width you prefer */
+            overflow: hidden; /* Prevent content from spilling out */
+            text-overflow: ellipsis; /* Add an ellipsis to text that overflows */
+            white-space: nowrap; /* Ensure the text doesn't wrap */
+        }
+
+    </style>
+</head>
+
+<body class="bg-main text-color">
+<!-- Context Menu -->
+<div id="tabContextMenu" class="hidden context-menu">
+    <ul>
+        <li id="closeTab">Close Tab</li>
+        <!-- More context actions can be added here -->
+    </ul>
+</div>
+<!-- Left Side: Session List and Quick Connect Form -->
+
+<div class="flex flex-col md:flex-row h-screen">
+    <div class="hamburger-container fixed top-0 left-0 z-50">
+        <button id="hamburger" class="hamburger p-4 text-white">
+            &#9776; <!-- Hamburger icon -->
+        </button>
+
+    </div>
+    <div class="sidebar bg-sidebar md:w-1/4 p-4 overflow-y-auto transition-transform duration-500 ease-in-out">
+        <br><br>
+        <div class="mb-4">
+            <input id="search-query" class="search-input form-input px-4 py-2 rounded w-full" type="text" placeholder="Search sessions...">
+        </div>
+         <div class="mb-4 flex items-center">
+            <input type="checkbox" id="netbox-search" class="mr-2">
+            <label for="netbox-search" class="text-sm">Use NetBox Search</label>
+        </div>
+        <div class="mb-4">
+            <button id="search-button" class="accordion-header bg-accordion-header px-4 py-2 bg-blue-500 text-white rounded">Search</button>
+        </div>
+        <!-- Session Accordion -->
+        <div class="accordion bg-accordion mb-6 p-4 space-y-2">
+            {% for folder in sessions %}
+            <div class="border border-accordion rounded">
+                <button class="accordion-header w-full bg-accordion-header p-2 flex justify-between items-center rounded">
+                    <span>{{ folder.folder_name }}</span>
+                </button>
+                <div class="accordion-content bg-accordion-content p-2 hidden">
+                    {% for session in folder.sessions %}
+                    <div class="session-item" data-session="{{ session.json }}">
+                        {{ session.display_name }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+
+        <div class="quick-connect bg-quick-connect p-4 ">
+            <!-- Quick Connect Form -->
+            <div class="quick-connect-header">
+                Quick Connect
+            </div>
+            <form id="quick-connect-form" class="flex flex-col space-y-2">
+                <input type="text" id="host" placeholder="Host" class="form-input px-4 py-2 rounded bg-input border border-outline text-color" value="10.0.0.107">
+                <input type="text" id="port" placeholder="Port" class="form-input px-4 py-2 rounded bg-input border border-outline text-color" value="22">
+                <input type="text" id="username" placeholder="Username" class="form-input px-4 py-2 rounded bg-input border border-outline text-color" value="">
+                <input type="password" id="password" placeholder="Password" class="form-input px-4 py-2 rounded bg-input border border-outline text-color" value="">
+                <button type="submit" id="connect" class="button text-button connect">Connect</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Right Side: Terminal Tabs -->
+    <!-- Main Content Section -->
+    <div class="main-content flex-1 p-4">
+        <div class="terminal-control bg-terminal-control p-4 rounded">
+            <div class="tabs mx-auto m-10">
+                <div class="top flex rounded-t-md overflow-hidden custom-bg-color">
+                    <!-- Removed the "Tabs" header -->
+                    <div class="buttons flex justify-start" id="tab-buttons">
+                        <!-- Dynamically added tab buttons will go here -->
+                    </div>
+                </div>
+                <div class="center relative" id="tab-contents">
+                    <!-- Dynamically added tab content will go here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End of Main Content Section -->
+</div>
+<div id="credentialsModal"  class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Enter SSH Credentials</h2>
+        <form id="credentials-form">
+            <input type="text" id="ssh-username" placeholder="Username" required>
+            <input type="password" id="ssh-password" placeholder="Password" required>
+            <input type="hidden" id="ssh-host">
+            <input type="hidden" id="ssh-port">
+            <input type="hidden" id="ssh-tab-uuid">
+            <input type="hidden" id="ssh-display-name">
+            <button type="submit">Connect</button>
+        </form>
+    </div>
+</div>
+<div id="searchModal" class="modal">
+    <div class="modal-content search-results">
+        <span class="close-button" onclick="hideSearchModal()">&times;</span>
+        <h2>Search Results</h2>
+        <!-- Add this in your HTML where the table is defined -->
+        <table id="search-results-table" class="search-results-table">
+            <thead>
+
+            </thead>
+            <tbody>
+            <!-- Search results will be populated here -->
+            </tbody>
+        </table>
+
+    </div>
+</div>
+<script>
+    // const gFitAddon = new FitAddon.FitAddon;
+    //
+
+</script>
+<script src="/static/js/velociterm.js"></script>
+
+
+</body>
+</html>

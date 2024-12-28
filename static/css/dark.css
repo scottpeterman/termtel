@@ -1,0 +1,336 @@
+/* dark.css */
+
+/* Variables */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --grey-color: #adb5bd;
+    --hover-grey-color: #f8f9fa;
+    --hover-bg-color: #495057;
+    --sidebar-bg-color: #343a40;
+    --footer-bg-color: #343a40;
+    --footer-text-color: #adb5bd;
+}
+
+/* Body */
+body {
+    background-color: #1c1e21;
+    color: #adb5bd;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Form */
+.login-form {
+    background-color: #3b3d42;
+    border-radius: 8px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+}
+
+.login-form h2 {
+    color: #f8f9fa;
+    margin-bottom: 1.5rem;
+}
+
+.login-form .form-label {
+    color: #adb5bd;
+}
+
+.form-control {
+    background-color: #495057;
+    border: none;
+    border-bottom: 2px solid #6c757d;
+    border-radius: 0;
+    color: white;
+    padding: 0.75rem 1rem;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.form-control:focus {
+    background-color: #3b3d42;
+    border-color: #00aaff;
+    box-shadow: none;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #00aaff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0088cc;
+    box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #3b3d42 inset !important;
+    -webkit-text-fill-color: white !important;
+}
+
+/* Image Container */
+.image-container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: var(--sidebar-bg-color);
+    width: 250px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    padding-top: 56px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar .nav-link {
+    color: var(--grey-color);
+}
+
+.sidebar .nav-link:hover {
+    color: var(--hover-grey-color);
+}
+
+.sidebar .nav-link.collapsed .chevron {
+    border-color: var(--grey-color);
+}
+
+.sidebar .nav-link:not(.collapsed) .chevron {
+    border-color: var(--hover-grey-color);
+}
+
+.sidebar .nav-item.active .nav-link,
+.sidebar .nav-item.active .nav-link:hover {
+    background-color: var(--hover-bg-color);
+    color: var(--hover-grey-color);
+}
+
+.sidebar .submenu {
+    padding-left: 20px;
+}
+
+.sidebar .chevron {
+    transition: transform 0.3s ease;
+}
+
+.sidebar .chevron.rotate {
+    transform: rotate(90deg);
+}
+
+/* Content */
+.content {
+    margin-left: 250px;
+    padding-top: 56px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--footer-bg-color);
+    color: var(--footer-text-color);
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+    width: 100%;
+}
+
+/* Navbar logo */
+.navbar-logo {
+    max-height: 40px; /* Adjust the height as needed */
+    height: auto;
+    width: auto;
+    margin-left: 10px; /* Adjust the spacing between the text and logo */
+    vertical-align: middle; /* Align the logo vertically with the text */
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+/* Ensure full height for card and its content */
+.card,
+.card-body,
+#chart-container,
+#chart {
+    height: 100%;
+}
+
+#chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Table */
+.table {
+    color: var(--grey-color);
+    background-color: var(--dark-color);
+    border-color: var(--grey-color);
+}
+
+.table th,
+.table td {
+    border-color: var(--grey-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--hover-bg-color);
+    color: var(--hover-grey-color);
+}
+
+.table thead th {
+    color: var(--light-color);
+    background-color: var(--dark-color);
+}
+
+/* Buttons */
+.btn-square {
+    border-radius: 0;
+}
+
+.btn-primary,
+.btn-danger,
+.btn-secondary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-light {
+    border-radius: 0;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+}
+
+.btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-info:hover {
+    background-color: #0b9ecc;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-light {
+    background-color: #f8f9fa;
+    border-color: #f8f9fa;
+    color: #343a40;
+}
+
+.btn-light:hover {
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+/* Modal */
+.modal-content {
+    background-color: var(--dark-color);
+    color: var(--light-color);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--grey-color);
+}
+
+.modal-title {
+    color: var(--light-color);
+}
+
+.modal-body .form-label {
+    color: var(--grey-color);
+}
+
+.modal-body .form-control {
+    background-color: #495057;
+    border: none;
+    color: white;
+    padding: 0.75rem 1rem;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.modal-body .form-control:focus {
+    background-color: #3b3d42;
+    border-color: #00aaff;
+    box-shadow: none;
+    color: white;
+}

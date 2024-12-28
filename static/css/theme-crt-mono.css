@@ -1,0 +1,241 @@
+:root {
+    --bg-main: #000000; /* Black background */
+    --bg-sidebar: #0a0a0a; /* Very dark gray for the sidebar */
+    --bg-accordion: #0d0d0d; /* Slightly lighter dark gray for accordion sections */
+    --bg-accordion-header: #111111; /* Dark gray for headers */
+    --bg-accordion-content: #000000; /* Black for content areas */
+    --bg-button: #1a1a1a; /* Dark gray for buttons */
+    --bg-button-hover: #2a2a2a; /* A lighter dark gray for hover effect */
+    --bg-input: #0a0a0a; /* Matching the sidebar for input fields */
+    --bg-tab: #111111; /* Dark gray for tabs */
+    --bg-tab-active: #ffffff; /* White for active tabs */
+    --bg-thumb-active: #ffffff; /* White for scrollbar thumb */
+    --bg-terminal: #000000; /* Black background for the terminal */
+    --text-color: #ffffff; /* White for text for high contrast and readability */
+    --text-accordion: #e0e0e0; /* Light gray for accordion text */
+    --text-button: #ffffff; /* White text for buttons */
+    --text-tab: #ffffff; /* White text for active tabs */
+    --text-tab-inactive: #555555; /* Medium gray for inactive tabs */
+    --border-color: #222222; /* Dark gray for borders */
+    --border-focus: #ffffff; /* White for elements in focus */
+    /* CRT-style scrollbar colors */
+    --scrollbar-background: #000000;
+    --scrollbar-thumb: #555555;
+    --scrollbar-thumb-hover: #aaaaaa;
+}
+
+/* Apply CRT-like glow effect to text to simulate the scan lines or glowing effect of old monitors */
+.text-crt {
+    color: #ffffff;
+    text-shadow:
+            0 0 4px #ffffff, /* First layer of glow */
+            0 0 8px #ffffff; /* Second layer of glow */
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    /* ... */
+}
+
+.custom-bg-color {
+    background-color: var(--bg-sidebar); /* Use your chosen variable color */
+}
+
+#tab-contents {
+    position: relative; /* if you need it for positioning */
+    background-color: var(--bg-main); /* or any other color variable you've defined */
+    /* ... other styles you may have ... */
+}
+
+.sidebar {
+    background-color: var(--bg-sidebar);
+    /* ... */
+}
+
+/* Accordion styles... /
+.accordion-header {
+background-color: var(--bg-accordion-header);
+/ ... */
+
+
+.accordion-content {
+    background-color: var(--bg-accordion-content);
+    color: var(--text-accordion);
+    /* ... */
+}
+
+/* Button styles... /
+.button {
+background-color: var(--bg-button);
+color: var(--text-button);
+/ ... */
+
+
+.button:hover {
+    background-color: var(--bg-button-hover);
+    /* ... */
+}
+
+/* Input styles... /
+.form-input {
+background-color: var(--bg-input);
+border-color: var(--border-color);
+color: var(--text-color);
+/ ... */
+
+
+.form-input:focus {
+    outline: 2px solid var(--border-focus);
+    box-shadow: none;
+    /* ... */
+}
+
+/* Tab button styles... /
+.tab-button {
+background-color: var(--bg-tab);
+color: var(--text-tab-inactive);
+/ ... */
+
+
+/*.tab-button.active-button {*/
+/*  background-color: var(--bg-tab-active);*/
+/*  color: var(--text-tab);*/
+/*  !* ... *!*/
+/*}*/
+
+/* Terminal styles... /
+.terminal {
+background-color: var(--bg-terminal);
+color: var(--text-color);
+/ ... */
+/* Apply the above variables to style the tab components */
+.tab-button {
+    background-color: var(--bg-tab);
+    color: var(--text-tab-inactive);
+    padding: 0.5em 1em;
+    margin-right: 0.5em;
+    border: 1px solid var(--border-color);
+    border-bottom: none; /* Remove bottom border for a tab effect */
+    border-radius: 5px 5px 0 0; /* Rounded corners on top */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tab-button:hover {
+    background-color: var(--bg-button-hover);
+}
+
+.tab-button.active-button {
+    background-color: var(--bg-tab-active);
+    color: var(--text-tab);
+    border-bottom: 1px solid var(--bg-main); /* Match the main background for active tab */
+}
+
+#tab-contents {
+    border: 1px solid var(--border-color);
+}
+
+/* Ensure the active tab content stands out */
+.active-tab {
+    border-top: none; /* Align with active tab */
+}
+
+/* Style the tab bar container */
+#tab-buttons {
+    background-color: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-color);
+}
+/* Style for the content within the tabs /
+.tab-content {
+background-color: var(--bg-terminal); / Terminal-like background for content /
+color: var(--text-color); / Text color for content /
+padding: 1em;
+border-radius: 0 0 5px 5px; / Rounded corners at the bottom /
+display: none; / By default, content is hidden */
+
+/* Display the active content */
+.active-tab .tab-content {
+    display: block;
+}
+
+/* Input fields styles */
+.form-input {
+    background-color: var(--bg-input); /* Already set to match sidebar */
+    color: var(--text-color); /* Soft off-white text for readability */
+    border-color: var(--border-color); /* Dark forest green borders */
+    /* ... other styles ... */
+}
+
+.form-input:focus {
+    outline: 2px solid var(--border-focus); /* Brighter green for focus */
+    /* ... other styles ... */
+}
+
+/* Connect button styles */
+.button {
+    background-color: var(--bg-button); /* Adjusted green */
+    color: var(--text-button); /* White text */
+    /* ... other styles ... */
+}
+
+.button:hover {
+    background-color: var(--bg-button-hover); /* Brighter green on hover */
+    /* ... other styles ... */
+}
+
+/* Search input styles */
+.search-input {
+    border: 1px solid var(--border-color); /* Dim forest green outline */
+    /* ... other styles ... */
+}
+
+.search-input {
+    border: none; /* Remove all borders */
+    border-bottom: 2px solid var(--border-color); /* Apply border only at the bottom */
+    background-color: var(--bg-input); /* Keep the background color */
+    color: var(--text-color); /* Keep the text color */
+    /* ... other styles ... */
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #306230FF;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #306230FF;
+}
+
+/* Styles for Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #306230FF #000000;
+}
+.bg-light, .bg-white {
+    background-color: #000 !important; /* Use !important to override Bootstrap's styles */
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-terminal);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-thumb-active);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-main);
+}

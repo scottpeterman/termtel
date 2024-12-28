@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Velociterm - {{ title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/theme-{{ theme }}.css">
+    <link rel="stylesheet" href="/static/css/xterm.css" />
+    <script src="/static/js/xterm.js"></script>
+    <script src="/static/js/xterm-addon-fit.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script>
+<script>    uuidv4 = null; // This should now work
+</script>
+    <style>
+        /* Flexbox setup for the full page */
+        .flex-row {
+            display: flex;
+            flex-wrap: nowrap;
+            height: 100vh; /* 100% of the viewport height */
+        }
+
+        .sidebar {
+            flex: 0 0 25%; /* Sidebar takes up 25% of the width */
+            /* Rest of your styles... */
+        }
+
+        .main-content {
+            flex: 1; /* Main content takes the rest of the space */
+            display: flex;
+            flex-direction: column;
+            /* Rest of your styles... */
+        }
+
+        /* Ensure the terminal control takes up the full height */
+        .terminal-control {
+            flex-grow: 1; /* Allows it to grow and fill the space */
+            display: flex;
+            flex-direction: column;
+            padding: 0; /* Adjust padding as necessary */
+            /* Rest of your styles... */
+        }
+
+        /* Style for the tabs container to take the full available space */
+        .tabs {
+            flex-grow: 1; /* Allow the tabs container to fill the space */
+            width: 100%; /* Full width of its parent */
+            display: flex;
+            flex-direction: column;
+            background: #2d3748; /* Adjust background as needed */
+        }
+
+        .top {
+            flex-shrink: 0; /* Ensures the tab headers don't shrink */
+            /* Rest of your styles... */
+        }
+
+        .center {
+            flex-grow: 1; /* Allows the tab content to take up available vertical space */
+            position: relative; /* Position relative for absolutely positioned tab contents */
+            overflow: hidden; /* Hide overflow */
+        }
+
+        .tab {
+            position: absolute;
+            width: 100%; /* Full width */
+            height: 100%; /* Full available height */
+            top: 0;
+            left: 0;
+            /* Rest of your styles... */
+        }
+
+        .xterm {
+            height: 100%; /* Full height of the tab */
+            overflow: auto; /* Scrollbar if content overflows */
+            /* Rest of your styles... */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .flex-row {
+                flex-direction: column;
+            }
+
+            .sidebar,
+            .main-content {
+                width: 100%; /* Full width on smaller screens */
+
+            }
+
+            .terminal-control {
+                padding: 1rem; /* Adjust padding as necessary */
+            }
+        }
+
+        /* Additional styles for active tab and button */
+        .active-tab {
+            display: block; /* Show the active tab */
+        }
+
+        .active-button {
+            /* Styles for the active button, if any */
+        }
+
+        /* Rest of your styles... */
+    </style>
+
+
+</head>
+
+<body class="bg-main text-color">
+
+  <!-- Left Side: Session List and Quick Connect Form -->
+
+    <div class="flex flex-col md:flex-row h-screen">
+        <div class="sidebar bg-sidebar md:w-1/4 p-4 overflow-y-auto">
+            <div class="mb-4">
+                <input class="search-input form-input px-4 py-2 rounded text-input w-full" type="text" placeholder="Search sessions...">
+            </div>
+            <div class="accordion bg-accordion mb-6 p-4 rounded-lg space-y-2">
+                <!-- Accordion sections -->
+                <!-- Session Accordion for USA-1 -->
+                <div class="border border-accordion rounded">
+                    <button class="accordion-header w-full bg-accordion-header text-accordion p-2 flex justify-between items-center rounded">
+                        <span>USA-1</span>
+                    </button>
+                    <div class="accordion-content bg-accordion-content text-white p-2 hidden">
+                        Details for USA-1...
+                    </div>
+                </div>
+                <!-- Session Accordion for USA-2 -->
+                <div class="border border-accordion rounded">
+                    <button class="accordion-header w-full bg-accordion-header text-accordion p-2 flex justify-between items-center rounded">
+                        <span>USA-2</span>
+                    </button>
+                    <div class="accordion-content bg-accordion-content text-white p-2 hidden">
+                        Details for USA-2...
+                    </div>
+                </div>
+            </div>
+            <div class="quick-connect bg-quick-connect p-4 rounded-lg">
+                <!-- Quick Connect Form -->
+                <form id="quick-connect-form" class="flex flex-col space-y-2">
+                    <input type="text" id="host" placeholder="Host" class="form-input px-4 py-2 rounded bg-input border border-outline text-white">
+                    <input type="text" id="port" placeholder="Port" class="form-input px-4 py-2 rounded bg-input border border-outline text-white" value="22">
+                    <input type="text" id="username" placeholder="Username" class="form-input px-4 py-2 rounded bg-input border border-outline text-white">
+                    <input type="password" id="password" placeholder="Password" class="form-input px-4 py-2 rounded bg-input border border-outline text-white">
+                    <button type="submit" class="button bg-button hover:bg-button-hover text-white">Connect</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Right Side: Terminal Tabs -->
+<!-- Main Content Section -->
+<div class="main-content flex-1 p-4">
+    <div class="terminal-control bg-terminal-control p-4 rounded">
+        <div class="tabs mx-auto text-indigo-800 m-10">
+            <div class="top flex text-gray-100 rounded-t-md overflow-hidden">
+                <!-- Removed the "Tabs" header -->
+                <div class="buttons flex justify-start" id="tab-buttons">
+                    <!-- Dynamically added tab buttons will go here -->
+                </div>
+            </div>
+            <div class="center text-gray-800 relative" id="tab-contents">
+                <!-- Dynamically added tab content will go here -->
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- End of Main Content Section -->
+    </div>
+
+<script>
+    // Global variables
+    let terminals = {};
+    let connectionProperties = {};
+
+
+    // Debounce function to limit the frequency of resize calls
+    function debounce(func, timeout = 300){
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { func.apply(this, args); }, timeout);
+        };
+    }
+</script>
+
+<script>
+    // Resize the terminal to fit the container
+    function resizeTerminal(tabUuid) {
+        const terminalContainer = document.getElementById('terminal-' + tabUuid);
+        if (terminalContainer && terminalContainer.offsetWidth > 0 && terminalContainer.offsetHeight > 0) {
+            const fitAddon = terminals[tabUuid].fitAddon; // Assuming you have stored fitAddon in the terminal instance
+            fitAddon.fit();
+        } else {
+            console.log("Skipping resize: Invalid container dimensions for tabUuid", tabUuid);
+        }
+    }
+    function resizeTerminalWithRetry(terminalId, maxAttempts, delay) {
+        function attemptResize(attempt) {
+            const terminalContainer = document.getElementById('terminal-' + terminalId);
+            if (terminalContainer && terminalContainer.offsetWidth > 0 && terminalContainer.offsetHeight > 0 && window.getComputedStyle(terminalContainer).display !== 'none') {
+                terminals[terminalId].fitAddon.fit();
+                console.log('Terminal resized successfully for', terminalId);
+            } else if (attempt < maxAttempts) {
+                console.log(`Attempt ${attempt} for ${terminalId}: Invalid dimensions, retrying in ${delay}ms`);
+                setTimeout(() => attemptResize(attempt + 1), delay);
+            } else {
+                console.error(`Failed to resize terminal ${terminalId} after maximum attempts`);
+            }
+        }
+        attemptResize(1);
+    }
+
+    // Function to create and open a new terminal
+    function createAndInitializeTerminal(tabUuid) {
+        const terminalId = 'terminal-' + tabUuid;
+        console.log("Creating terminal for tabId:", tabUuid);
+        const tabContent = document.getElementById(tabUuid);
+        console.log("Found tab content element:", tabContent);
+        // Create a new div element for the terminal within the tab content
+        const terminalContainer = document.createElement('div');
+        terminalContainer.classList.add('xterm');
+        terminalContainer.setAttribute('id', terminalId);
+        terminalContainer.style.height = '100%'; // Ensure the terminal takes the full height
+
+        // Append the terminal container to the tab content
+        // const tabContent = document.getElementById('tab-' + tabUuid);
+        tabContent.appendChild(terminalContainer);
+
+        // Create a new Terminal instance
+        const term = new Terminal();
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        terminals[tabUuid] = { terminal: term, fitAddon: fitAddon };
+
+        // Open the terminal in the container
+        term.open(terminalContainer);
+        term.write('Welcome to the terminal ' + tabUuid);
+
+
+
+        // Call resizeTerminal to fit the terminal initially
+        const maxAttempts = 5; // Maximum number of attempts
+        const delay = 1000; // Delay in milliseconds between attempts
+
+        resizeTerminalWithRetry(terminalId, maxAttempts, delay);
+
+        // Resize observer for the terminal container
+        const resizeObserver = new ResizeObserver(resizeTerminal);
+        resizeObserver.observe(terminalContainer);
+        switchTab(tabUuid);
+        // Return the terminal instance
+        return term;
+    }
+
+    // Function to add a new tab with terminal
+    function addTab() {
+        const tabUuid = uuid.v4(); // Use uuid.v4() directly without redefining it
+
+        const tabId = 'tab-' + tabUuid;
+        const terminalId = 'terminal-' + tabUuid;
+
+        // Create tab button
+        const newTabButton = document.createElement('span');
+        newTabButton.className = 'btn bg-indigo-800 cursor-pointer p-2 px-3';
+        newTabButton.textContent = 'Tab ' + tabUuid.substring(0, 8); // Shortened UUID for display
+        newTabButton.setAttribute('data-uuid', tabUuid);
+        newTabButton.addEventListener('click', () => switchTab(tabUuid));
+        document.getElementById('tab-buttons').appendChild(newTabButton);
+
+        // Create tab content
+        const newTabContent = document.createElement('div');
+        newTabContent.className = 'tab bg-white rounded-b-md w-full border border-t-0 absolute top-0 hidden';
+        newTabContent.id = tabUuid;
+
+        // Create terminal container within tab content
+        const terminalContainer = document.createElement('div');
+        terminalContainer.className = 'xterm';
+        terminalContainer.id = terminalId;
+        newTabContent.appendChild(terminalContainer);
+
+        document.getElementById('tab-contents').appendChild(newTabContent);
+
+        // Initialize terminal in the new tab
+        // terminals[tabUuid] = createAndInitializeTerminal(terminalId);
+        setTimeout(() => {
+            terminals[tabUuid] = createAndInitializeTerminal(terminalId);
+        }, 1000); // Delay for 100 milliseconds
+
+        // Initialize connection properties for the new tab
+        connectionProperties[tabUuid] = {
+            host: '', // These will be set when connecting
+            port: '',
+            username: '',
+            password: '',
+            // ... other properties ...
+        };
+    }
+
+    function switchTab(tabUuid) {
+        const tabs = document.querySelectorAll('.tab');
+        const btns = document.querySelectorAll('.btn[data-uuid]');
+
+        // Hide all tabs and deactivate all buttons
+        tabs.forEach(tab => tab.classList.add('hidden'));
+        btns.forEach(btn => btn.classList.remove('active-button'));
+
+        // Show the selected tab and activate the corresponding button
+        const activeTab = document.getElementById('tab-' + tabUuid);
+        const activeButton = document.querySelector(`.btn[data-uuid="${tabUuid}"]`);
+        if (activeTab && activeButton) {
+            activeTab.classList.remove('hidden');
+            activeButton.classList.add('active-button');
+        }
+
+        // Focus on the terminal in the active tab
+        const term = terminals[tabUuid];
+        if (term) {
+            term.focus();
+        }
+    }
+
+    document.getElementById('tab-buttons').addEventListener('click', function(event) {
+        const tabUuid = event.target.getAttribute('data-uuid');
+        if (tabUuid) {
+            switchTab(tabUuid);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let myUuid = uuid.v4(); // Now it should work without error
+        console.log("Generated UUID:", myUuid);
+
+        addTab(); // Add initial tab
+
+    });
+</script>
+
+
+<script>
+    // Accordion toggle
+    document.querySelectorAll('.accordion-header').forEach(button => {
+        button.addEventListener('click', () => {
+            const accordionContent = button.nextElementSibling;
+            accordionContent.classList.toggle('hidden');
+        });
+    });
+
+    // Event listener for quick connect form submission
+    document.getElementById('quick-connect-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Generate UUID for new connection
+        let newTabUuid = uuid.v4();
+
+        // Create a new tab for the connection
+        addTab();
+
+        // Set connection properties based on form input
+        connectionProperties[newTabUuid] = {
+            host: document.getElementById('host').value,
+            port: document.getElementById('port').value,
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+            // ... other properties ...
+        };
+
+        // TODO: Implement connection logic using connectionProperties[newTabUuid]
+    });
+
+    // Event listener for DOMContentLoaded
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     // Initialize a default tab or any initial setup if necessary
+    //     // Example: addTab("Initial Tab");
+    // });
+</script>
+
+</body>
+</html>
