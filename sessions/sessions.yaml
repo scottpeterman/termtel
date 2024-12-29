@@ -1,0 +1,94 @@
+- folder_name: 0 - linux
+  sessions:
+  - DeviceType: Linux
+    Model: Thinkstation P3
+    SerialNumber: ''
+    SoftwareVersion: ''
+    Vendor: Lenovo
+    credsid: '1'
+    display_name: T1000
+    host: 10.0.0.108
+    port: '22'
+  - DeviceType: Linux
+    Model: Thinkstation P3
+    SerialNumber: ''
+    SoftwareVersion: ''
+    Vendor: Lenovo
+    credsid: '1'
+    display_name: VM1
+    host: 10.0.0.108
+    port: '22'
+  - DeviceType: Linux
+    Model: Thinkstation P3
+    SerialNumber: ''
+    SoftwareVersion: ''
+    Vendor: Lenovo
+    credsid: '1'
+    display_name: VM2
+    host: 10.0.0.108
+    port: '22'
+  - DeviceType: Linux
+    Model: Thinkstation P3
+    SerialNumber: ''
+    SoftwareVersion: ''
+    Vendor: Lenovo
+    credsid: '1'
+    display_name: PI_4
+    host: 10.0.0.108
+    port: '22'
+  - DeviceType: Linux
+    Model: Thinkstation P3
+    SerialNumber: ''
+    SoftwareVersion: ''
+    Vendor: Lenovo
+    credsid: '1'
+    display_name: PI-2
+    host: 10.0.0.108
+    port: '22'
+- folder_name: home-lab
+  sessions:
+  - DeviceType: GNS3_IOS
+    Model: 7204
+    SerialNumber: X00000
+    SoftwareVersion: ''
+    Vendor: Cisco
+    credsid: '1'
+    display_name: usa1-rtr-01
+    host: 172.16.101.100
+    port: '22'
+  - DeviceType: GNS3_IOS
+    Model: 7204
+    SerialNumber: X00000
+    SoftwareVersion: ''
+    Vendor: Cisco
+    credsid: '1'
+    display_name: usa2-rtr-01
+    host: 172.16.102.100
+    port: '22'
+  - DeviceType: GNS3_IOS
+    Model: 7204
+    SerialNumber: X00000
+    SoftwareVersion: ''
+    Vendor: Cisco
+    credsid: '1'
+    display_name: usa1-core-01
+    host: 172.16.101.1
+    port: '22'
+  - DeviceType: GNS3_IOS
+    Model: 7204
+    SerialNumber: X00000
+    SoftwareVersion: ''
+    Vendor: Cisco
+    credsid: '1'
+    display_name: usa1-arista-1
+    host: 172.16.101.21
+    port: '22'
+  - DeviceType: GNS3_IOS
+    Model: 7204
+    SerialNumber: X00000
+    SoftwareVersion: ''
+    Vendor: Cisco
+    credsid: '1'
+    display_name: usa1-arista-2
+    host: 172.16.101.22
+    port: '22'

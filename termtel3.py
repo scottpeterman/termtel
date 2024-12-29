@@ -5,12 +5,10 @@ Termtel - A PyQt6 Terminal Emulator
 import sys
 import socket
 import logging
-from pathlib import Path
-
 import yaml
 
 from napalm_dashboard import DeviceDashboardWidget
-from themes2 import ThemeLibrary, LayeredHUDFrame
+from themes2 import ThemeLibrary, LayeredHUDFrame, THEME_MAPPING
 
 from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtWidgets import QApplication, QMainWindow, QSplitter, QWidget, QHBoxLayout, QVBoxLayout, QMessageBox, \
@@ -318,59 +316,6 @@ class TermtelWindow(QMainWindow):
         self.main_splitter.setSizes([int(width * 0.6), int(width * 0.4)])
         self.terminal_splitter.setSizes([250, width - 250])
 
-
-    # def init_ui(self):
-    #     self.setWindowTitle('TerminalTelemetry')
-    #
-    #     # Screen geometry setup remains the same
-    #     screen = QApplication.primaryScreen()
-    #     screen_geometry = screen.availableGeometry()
-    #     width = int(screen_geometry.width() * 0.8)
-    #     self.width = width
-    #     height = int(screen_geometry.height() * 0.8)
-    #     center_point = screen_geometry.center()
-    #     x = center_point.x() - width // 2
-    #     y = center_point.y() - height // 2
-    #     self.setGeometry(x, y, width, height)
-    #
-    #     # Create main frame using LayeredHUDFrame
-    #     self.main_frame = LayeredHUDFrame(self, theme_manager=self.theme_manager, theme_name=self.theme)
-    #     self.setCentralWidget(self.main_frame)
-    #
-    #     # Main layout goes inside the frame's content layout
-    #     main_layout = QHBoxLayout()
-    #     self.main_frame.content_layout.addLayout(main_layout)
-    #     main_layout.setContentsMargins(0, 0, 0, 0)
-    #     main_layout.setSpacing(0)
-    #
-    #     # Create splitter
-    #     self.splitter = QSplitter(Qt.Orientation.Horizontal)
-    #     main_layout.addWidget(self.splitter)
-    #
-    #     # Session Navigator (also using LayeredHUDFrame)
-    #     nav_frame = LayeredHUDFrame(self, theme_manager=self.theme_manager, theme_name=self.theme)
-    #     self.session_navigator = SessionNavigator(parent=self, cred_manager=self.cred_manager)
-    #     nav_layout = QVBoxLayout()
-    #     nav_frame.content_layout.addLayout(nav_layout)
-    #     nav_layout.addWidget(self.session_navigator)
-    #     nav_frame.setMinimumWidth(250)
-    #     nav_frame.setMaximumWidth(400)
-    #     self.splitter.addWidget(nav_frame)
-    #
-    #     # Terminal Tabs (using LayeredHUDFrame)
-    #     term_frame = LayeredHUDFrame(self, theme_manager=self.theme_manager, theme_name=self.theme)
-    #     self.terminal_tabs = TerminalTabWidget(self.port, parent=self)
-    #     term_layout = QVBoxLayout()
-    #     term_frame.content_layout.addLayout(term_layout)
-    #     term_layout.addWidget(self.terminal_tabs)
-    #     self.splitter.addWidget(term_frame)
-    #
-    #     # Set splitter sizes
-    #     nav_width = int(width * 0.20)
-    #     term_width = width - nav_width
-    #     self.splitter.setSizes([nav_width, term_width])
-    #     self.switch_theme(self.theme)
-
     def switch_theme(self, theme_name: str):
         """Override switch_theme to save the preference."""
         self.theme = theme_name
@@ -387,15 +332,15 @@ class TermtelWindow(QMainWindow):
         # Update session navigator
         self.session_navigator.update_theme(theme_name)
 
-        # Update terminal tabs
-        self.terminal_tabs.update_theme(theme_name)
+        # Update terminal tabs with mapped theme name
+        mapped_theme = THEME_MAPPING.get(theme_name, "Cyberpunk")  # Default to Cyberpunk if no mapping
+        self.terminal_tabs.update_theme(mapped_theme)
 
         # Update the application palette based on theme
         if theme_name in ['light_mode']:
             self.apply_light_palette()
         else:
             self.apply_dark_palette()
-
     def handle_session_connect(self, connection_data):
         """Handle connection request."""
         logger.info(f"Connecting to: {connection_data['host']}:{connection_data['port']}")
@@ -482,11 +427,8 @@ class TermtelWindow(QMainWindow):
         event.accept()
 
 
-@click.command()
-@click.option('--theme', default='cyberpunk', help='Set the theme for the terminal.')
-@click.option('--sessionfile', default='sessions.yaml',
-              help='YAML file containing session configurations.')
-def main(theme: str, sessionfile: str):
+
+def main():
     """TerminalTelemetry - A modern terminal emulator."""
     # if debug:
     #     logger.setLevel(logging.DEBUG)
@@ -500,7 +442,7 @@ def main(theme: str, sessionfile: str):
     # Enable remote debugging
     # from PyQt6.QtCore import Qt
     # QCoreApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
-
+    theme = "cyberpunk"
     # Create theme manager instance
     theme_manager = ThemeLibrary()
 
@@ -509,7 +451,7 @@ def main(theme: str, sessionfile: str):
         logger.warning(f"Theme '{theme}' not found, using 'cyberpunk'")
         theme = 'cyberpunk'
 
-    window = TermtelWindow(theme=theme, session_file=sessionfile)
+    window = TermtelWindow(theme=theme)
     window.show()
 
     sys.exit(app.exec())

@@ -365,6 +365,18 @@ class TerminalTabWidget(QTabWidget):
 
         self.setup_ui()
 
+    def get_mapped_terminal_theme(self, pyqt_theme: str) -> str:
+        """Map PyQt theme names to terminal theme names."""
+        theme_mapping = {
+            "cyberpunk": "Cyberpunk",
+            "dark_mode": "Dark",
+            "light_mode": "Light",
+            "retro_green": "Green",
+            "retro_amber": "Amber",
+            "neon_blue": "Neon"
+        }
+        return theme_mapping.get(pyqt_theme, "Cyberpunk")
+
     def setup_ui(self):
         """Initialize the tab widget UI."""
         self.setTabsClosable(True)
@@ -379,53 +391,23 @@ class TerminalTabWidget(QTabWidget):
         self.customContextMenuRequested.connect(self.show_context_menu)
 
     def update_theme(self, theme_name: str):
-        # if hasattr(self.parent(), 'theme_manager'):
-        colors = self.parent.theme_manager.get_colors(theme_name)
+        """Update both tab widget and terminal themes."""
+        # Update tab widget styling with parent theme colors
+        if hasattr(self.parent, 'theme_manager'):
+            colors = self.parent.theme_manager.get_colors(theme_name)
+            # ... (existing tab stylesheet code) ...
 
-            # Apply theme to tab widget
-        tab_stylesheet = f"""
-            QTabWidget::pane {{
-                border: 1px solid {colors['border']};
-                background: {colors['darker_bg']};
-            }}
-            QTabBar::tab {{
-                background: {colors['darker_bg']};
-                color: {colors['text']};
-                padding: 8px 12px;
-                border: 1px solid {colors['border']};
-                min-width: 100px;
-                font-family: "Courier New";
-            }}
-            QTabBar::tab:selected {{
-                background: {colors['background']};
-                border-bottom: 2px solid {colors['line']};
-                color: {colors['text']};
-                font-weight: bold;
-            }}
-            QTabBar::tab:hover:!selected {{
-                background: {colors['button_hover']};
-            }}
-        """
+        # Update terminal theme
+        terminal_theme = self.get_mapped_terminal_theme(theme_name)
+        self.current_term_theme = terminal_theme
 
-        if theme_name == "light_mode":
-            tab_stylesheet += """
-                QTabBar::tab {
-                    color: #000000;  /* Force black text for light mode */
-                }
-                QTabBar::tab:selected {
-                    color: #000000;  /* Keep text black when selected */
-                }
-            """
-
-
-        self.setStyleSheet(tab_stylesheet)
-
-        # Update existing terminals
+        # Update all terminal instances
         for i in range(self.count()):
             terminal = self.widget(i)
-            if hasattr(terminal, 'update_theme'):
-                terminal.update_theme(theme_name)
-
+            if isinstance(terminal, TerminalTab) and terminal.web_view:
+                theme_data = terminal_themes.get(terminal_theme)
+                if theme_data:
+                    terminal.web_view.page().runJavaScript(theme_data["js"])
     def create_terminal(self, connection_data: Dict) -> str:
         """Create a new terminal tab."""
         session_id = connection_data['uuid'] or str(uuid.uuid4())

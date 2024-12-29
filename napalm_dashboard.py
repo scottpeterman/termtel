@@ -15,7 +15,7 @@ from PyQt6.QtCore import Qt, QTimer, QByteArray, QMargins, QThread, QObject, pyq
 from PyQt6.QtGui import QFont, QColor, QPen, QPainter
 
 # Importing from separate modules (after splitting code)
-from themes import ThemeLibrary, LayeredHUDFrame, ThemeColors
+from themes2 import ThemeLibrary, LayeredHUDFrame, ThemeColors
 # from hud import (apply_hud_styling, setup_chart_style, style_series, get_router_svg, get_switch_svg)
 from hud_icons import get_switch_svg, get_discovering_svg, get_router_svg, get_unknown_svg
 
