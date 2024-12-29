@@ -2,6 +2,7 @@ import ipaddress
 import math
 import sys
 import traceback
+from time import sleep
 
 # PyQt imports
 from PyQt6.QtSvgWidgets import QSvgWidget
@@ -14,6 +15,8 @@ from PyQt6.QtCharts import QChartView, QValueAxis, QChart, QLineSeries
 from PyQt6.QtCore import Qt, QTimer, QByteArray, QMargins, QThread, QObject, pyqtSignal
 from PyQt6.QtGui import QFont, QColor, QPen, QPainter
 
+from helpers.credslib import SecureCredentials
+from napalm_db_dialog import NetworkDeviceDialog
 # Importing from separate modules (after splitting code)
 from themes2 import ThemeLibrary, LayeredHUDFrame, ThemeColors
 # from hud import (apply_hud_styling, setup_chart_style, style_series, get_router_svg, get_switch_svg)
@@ -72,6 +75,8 @@ class DeviceDashboardWidget(QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
         # self.setModal(False)
+        self.parent = parent
+        self.refparent = parent
         try:
             self.theme_manager = parent.theme_manager
             self._current_theme = parent.theme
@@ -89,7 +94,16 @@ class DeviceDashboardWidget(QMainWindow):
         self.interface_speeds = {}
         self.history_length = 30
         self.theme = parent.theme
+
+        self.cred_manager = self.refparent.cred_manager
+        # parent no set yet
+        # self.cred_manager.unlock(parent.master_password)
+
+        self.current_credentials = None
         self.setup_ui()
+        self.start_credential_loading()
+
+        # self.load_credentials()
         self.custom_driver = None  # Initialize custom_driver
         self.device = None  # Initialize device
         self.worker = None
@@ -130,31 +144,93 @@ class DeviceDashboardWidget(QMainWindow):
 
         main_layout.addLayout(dashboard_layout)
 
+    def on_credential_selected(self, index):
+        """Handle credential selection from combo box."""
+        cred_data = self.creds_combo.itemData(index)
+        # Just store the selected credentials for when Connect is clicked
+        self.current_credentials = cred_data
+
+    def handle_connect(self):
+        """Handle the connect button click."""
+        # Get any selected credentials
+        selected_cred = self.creds_combo.currentData()
+
+        # Always show dialog, but populate it if we have credentials
+        dialog = NetworkDeviceDialog(selected_cred, self)
+
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            conn_data = dialog.get_connection_data()
+            self.connect_device(
+                hostname=conn_data['host'],
+                username=conn_data['username'],
+                password=conn_data['password']
+            )
+    def attempt_load_credentials(self):
+        """Attempt to load credentials, schedule retry if not ready."""
+        if not hasattr(self, 'cred_manager') or not self.cred_manager:
+            print("No credential manager available")
+            return
+
+        if not (self.cred_manager.is_initialized and self.cred_manager.is_unlocked()):
+            print("Credential manager not ready, scheduling retry...")
+            # Schedule another attempt in 500ms
+            QTimer.singleShot(5000, self.attempt_load_credentials)
+            return
+
+        try:
+            creds_path = self.cred_manager.config_dir / "credentials.yaml"
+            if not creds_path.exists():
+                print("No credentials file found")
+                return
+
+            creds_list = self.cred_manager.load_credentials(creds_path)
+
+            self.creds_combo.clear()
+            self.creds_combo.addItem("Manual Entry", None)
+
+            for cred in creds_list:
+                display_name = cred.get('display_name', 'Unknown')
+                self.creds_combo.addItem(display_name, cred)
+
+        except Exception as e:
+            print(f"Failed to load credentials: {e}")
+            self.creds_combo.setEnabled(False)
+
+    def start_credential_loading(self):
+        """Initiate the credential loading process."""
+        # Start the first attempt
+        QTimer.singleShot(0, self.attempt_load_credentials)
+
     def create_connection_group(self):
         group = QGroupBox("Device Connection")
         layout = QHBoxLayout()
+
+        # Create credentials combo box
+        self.creds_combo = QComboBox()
+        self.creds_combo.addItem("Manual Entry", None)  # Default option
+        self.creds_combo.currentIndexChanged.connect(self.on_credential_selected)
+
+        # Driver selection (keep this)
         self.driver_combo = QComboBox()
+
+
         self.driver_combo.addItems(['AUTO', 'ios', 'eos', 'nxos'])
         self.driver_combo.setCurrentText('AUTO')
-        self.hostname_input = QLineEdit()
-        self.username_input = QLineEdit()
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.connect_button = QPushButton("Connect")
-        self.connect_button.clicked.connect(self.connect_device)
 
+        # Connect button
+        self.connect_button = QPushButton("Connect")
+        self.connect_button.clicked.connect(self.handle_connect)
+
+        # Add widgets to layout
+        layout.addWidget(QLabel("Credentials:"))
+        layout.addWidget(self.creds_combo)
         layout.addWidget(QLabel("Driver:"))
         layout.addWidget(self.driver_combo)
-        layout.addWidget(QLabel("Hostname:"))
-        layout.addWidget(self.hostname_input)
-        layout.addWidget(QLabel("Username:"))
-        layout.addWidget(self.username_input)
-        layout.addWidget(QLabel("Password:"))
-        layout.addWidget(self.password_input)
         layout.addWidget(self.connect_button)
 
         group.setLayout(layout)
         return group
+
 
     def create_device_info_widget(self):
         """Create and configure the device info display widget."""
@@ -377,11 +453,11 @@ class DeviceDashboardWidget(QMainWindow):
         else:
             raise Exception(f"Unsupported device type detected: {vendor}")
 
-    def connect_device(self):
+    def connect_device(self, hostname, username, password):
         """Modified connect method with async auto-detection and discovery state"""
-        hostname = self.hostname_input.text()
-        username = self.username_input.text()
-        password = self.password_input.text()
+        # hostname = self.hostname_input.text()
+        # username = self.username_input.text()
+        # password = self.password_input.text()
 
         if not all([hostname, username, password]):
             QMessageBox.warning(self, "Missing Information", "Please fill in all connection details.")

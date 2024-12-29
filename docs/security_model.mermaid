@@ -1,0 +1,40 @@
+classDiagram
+    class SecureCredentials {
+        +str app_name
+        -Fernet _fernet
+        +Path config_dir
+        +str key_identifier
+        +bool is_initialized
+
+        +__init__(app_name: str)
+        -_get_config_dir() Path
+        -_check_initialization() bool
+        +is_unlocked() bool
+        -_derive_key(password: str, salt: bytes) bytes
+        -_get_machine_id() str
+        +setup_new_credentials(master_password: str) bool
+        +unlock(master_password: str) bool
+        +encrypt_value(value: str) str
+        +decrypt_value(encrypted_value: str) str
+        +save_credentials(creds_list: list, filepath: Path)
+        +load_credentials(filepath: Path) list
+    }
+
+    class CredentialData {
+        <<interface>>
+        +str host
+        +int port
+        +str username
+        +str password
+        +str display_name
+        +str uuid
+    }
+
+    class StorageFormat {
+        <<interface>>
+        +str last_modified
+        +List~CredentialData~ credentials
+    }
+
+    SecureCredentials ..> CredentialData : manages
+    SecureCredentials ..> StorageFormat : uses

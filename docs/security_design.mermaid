@@ -1,0 +1,56 @@
+flowchart TB
+    subgraph FileSystem ["File System Structure"]
+        direction TB
+        ConfigDir["Config Directory\n(.config/Termtel)"] --> SaltFile[".salt file\n(16 bytes random salt)"]
+        ConfigDir --> CredsFile["credentials.yaml"]
+        ConfigDir --> KeyringFile["System Keyring\n(machine_id)"]
+
+        subgraph CredsYAML ["credentials.yaml structure"]
+            direction TB
+            Root["Root"] --> LastMod["last_modified: ISO timestamp"]
+            Root --> CredsList["credentials: []"]
+            CredsList --> Cred1["Credential 1\n- host\n- port\n- username\n- encrypted_password\n- display_name\n- uuid"]
+            CredsList --> Cred2["Credential 2\n..."]
+        end
+    end
+
+    subgraph Encryption ["Encryption Process"]
+        direction TB
+        SaveCred["Save Credentials"] --> CheckLock{"Is Unlocked?"}
+        CheckLock -->|No| Error["Raise Error"]
+        CheckLock -->|Yes| Process["Process Each Credential"]
+        Process --> CopyDict["Create Copy of Credential Dict"]
+        CopyDict --> CheckPW{"Has Password?"}
+        CheckPW -->|No| AddToList["Add to Encrypted List"]
+        CheckPW -->|Yes| EncryptPW["Encrypt Password\n(Fernet)"]
+        EncryptPW --> Store["Store as UTF-8"]
+        Store --> AddToList
+        AddToList --> DumpYAML["Dump to YAML"]
+    end
+
+    subgraph Decryption ["Decryption Process"]
+        direction TB
+        LoadCred["Load Credentials"] --> VerifyLock{"Is Unlocked?"}
+        VerifyLock -->|No| LoadError["Raise Error"]
+        VerifyLock -->|Yes| ReadYAML["Read YAML File"]
+        ReadYAML --> ProcessCreds["Process Each Credential"]
+        ProcessCreds --> CopyCred["Create Copy of Credential"]
+        CopyCred --> CheckEncPW{"Has Encrypted\nPassword?"}
+        CheckEncPW -->|No| AddDecList["Add to Decrypted List"]
+        CheckEncPW -->|Yes| DecryptPW["Decrypt Password\n(Fernet)"]
+        DecryptPW --> UTF8["Convert to UTF-8"]
+        UTF8 --> AddDecList
+    end
+
+    subgraph KeyManagement ["Key Management"]
+        direction TB
+        MasterPW["Master Password"] --> PBKDF2["PBKDF2-HMAC-SHA256\n(480000 iterations)"]
+        Salt[".salt file"] --> PBKDF2
+        PBKDF2 --> DerivedKey["32-byte Derived Key"]
+        DerivedKey --> FernetKey["Fernet Instance"]
+    end
+
+    KeyManagement -.-> Encryption
+    KeyManagement -.-> Decryption
+    Encryption --> FileSystem
+    FileSystem --> Decryption

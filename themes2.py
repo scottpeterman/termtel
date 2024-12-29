@@ -1123,13 +1123,13 @@ terminal_themes = {
                 width: 12px;
             }
             .xterm-viewport::-webkit-scrollbar-track {
-                background: #2b213a;
+                background: #121212;
             }
             .xterm-viewport::-webkit-scrollbar-thumb {
-                background: #00ff9c;
+                background: #0a8993;
             }
             .xterm-viewport::-webkit-scrollbar-thumb:hover {
-                background: #00cc7d;
+                background: #0affff;
             }
         `;
         """

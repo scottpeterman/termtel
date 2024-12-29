@@ -13,7 +13,7 @@ from themes2 import ThemeLibrary, LayeredHUDFrame, THEME_MAPPING
 from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtWidgets import QApplication, QMainWindow, QSplitter, QWidget, QHBoxLayout, QVBoxLayout, QMessageBox, \
     QInputDialog, QLineEdit, QStyleFactory
-from PyQt6.QtCore import QUrl, QThread, Qt, QCoreApplication
+from PyQt6.QtCore import QUrl, QThread, Qt, QCoreApplication, pyqtSignal
 from contextlib import closing
 from typing import Optional, cast
 import click
@@ -41,6 +41,8 @@ class FastAPIServer(QThread):
 
 
 class TermtelWindow(QMainWindow):
+    credentials_unlocked = pyqtSignal()
+
     def __init__(self, theme: str = "cyberpunk", session_file: str = "sessions.yaml"):
         super().__init__()
         self.server_thread: Optional[FastAPIServer] = None
@@ -53,7 +55,7 @@ class TermtelWindow(QMainWindow):
 
         # Override theme with saved preference if it exists
         self.theme = self.settings_manager.get_app_theme()
-
+        self.master_password = None
         # Initialize UI before applying theme
         setup_menus(self)
         self.init_ui()
@@ -377,8 +379,13 @@ class TermtelWindow(QMainWindow):
                     QLineEdit.EchoMode.Password
                 )
                 if ok and password:
+                    self.master_password = password
+
+                    #event here - go load creds list
                     if not self.cred_manager.unlock(password):
                         QMessageBox.warning(self, "Error", "Invalid master password")
+                    else:
+                        self.credentials_unlocked.emit()
 
         except Exception as e:
             logger.error(f"Failed to initialize credentials: {e}")
@@ -430,11 +437,6 @@ class TermtelWindow(QMainWindow):
 
 def main():
     """TerminalTelemetry - A modern terminal emulator."""
-    # if debug:
-    #     logger.setLevel(logging.DEBUG)
-    #
-    # # Insert WebEngine debugging arguments before creating QApplication
-    # sys.argv.extend(['--webEngineArgs --remote-debugging-port=9222'])
 
     app = QApplication(sys.argv)
     app.setApplicationName("TerminalTelemetry")
