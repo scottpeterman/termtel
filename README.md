@@ -5,123 +5,202 @@ A modern, cyberpunk-inspired terminal emulator with integrated network device mo
 ![TerminalTelemetry Interface](https://raw.githubusercontent.com/scottpeterman/termtel/main/docs/slides/slides1.gif
 )
 
+## Installation
 
-## Core Features
+### From PyPI
 
-### Terminal Interface
-- Multi-tabbed terminal sessions
-- Session management and persistence
-- Secure credential storage with master password protection
-- YAML-based session configuration
+```bash
+pip install TerminalTelemetry
+```
 
-### Network Telemetry
-- Real-time device monitoring dashboard
-- Automatic device discovery and type detection
-- Interface utilization graphs
-- Route table visualization
-- LLDP/CDP neighbor discovery
-- ARP table monitoring
+### From GitHub
 
-### User Interface
-- Split-pane design with adjustable widths
-- Session navigator with tree-based organization
-- Real-time graphs and statistics
-- Themed HUD-style frames with corner decorations
+```bash
+git clone https://github.com/scottpeterman/termtel.git
+cd termtel
+pip install -r requirements.txt
 
-## Design Architecture
+```
 
-### Theme System
-The application features a comprehensive theming system with several built-in themes:
-- Cyberpunk (default)
+#### to launch
+```commandline
+python -m termtel.termtel
+# or
+termtel
+```
+## Features
+
+- **Modern Terminal Emulator**
+  - Multi-session support with tabbed interface
+  - Customizable themes (Cyberpunk, Dark Mode, Light Mode, Retro Green, Retro Amber, Neon Blue)
+  - Session management and quick connect functionality
+  - Secure credential storage
+
+- **Network Device Telemetry**
+  - Real-time interface utilization monitoring with graphs
+  - Automatic device type detection
+  - LLDP/CDP neighbor discovery
+  - ARP table visualization
+  - Routing table analysis with prefix lookup
+  - Support for multiple network operating systems (Cisco IOS, Arista EOS, Cisco NXOS)
+
+- **Security Features**
+  - PBKDF2-HMAC-SHA256 key derivation (480,000 iterations)
+  - Fernet (AES-128-CBC) encryption with HMAC authentication
+  - Platform-specific secure storage locations
+  - Machine-specific binding
+  - Rate-limited authentication
+  - Cross-platform secure credential management
+  - Zero plaintext storage of sensitive data
+
+```mermaid
+flowchart TB
+    subgraph FileSystem ["File System Structure"]
+        direction TB
+        ConfigDir["Config Directory\n(.config/Termtel)"] --> SaltFile[".salt file\n(16 bytes random salt)"]
+        ConfigDir --> CredsFile["credentials.yaml"]
+        ConfigDir --> KeyringFile["System Keyring\n(machine_id)"]
+
+        subgraph CredsYAML ["credentials.yaml structure"]
+            direction TB
+            Root["Root"] --> LastMod["last_modified: ISO timestamp"]
+            Root --> CredsList["credentials: []"]
+            CredsList --> Cred1["Credential 1\n- host\n- port\n- username\n- encrypted_password\n- display_name\n- uuid"]
+            CredsList --> Cred2["Credential 2\n..."]
+        end
+    end
+
+    subgraph Encryption ["Encryption Process"]
+        direction TB
+        SaveCred["Save Credentials"] --> CheckLock{"Is Unlocked?"}
+        CheckLock -->|No| Error["Raise Error"]
+        CheckLock -->|Yes| Process["Process Each Credential"]
+        Process --> CopyDict["Create Copy of Credential Dict"]
+        CopyDict --> CheckPW{"Has Password?"}
+        CheckPW -->|No| AddToList["Add to Encrypted List"]
+        CheckPW -->|Yes| EncryptPW["Encrypt Password\n(Fernet)"]
+        EncryptPW --> Store["Store as UTF-8"]
+        Store --> AddToList
+        AddToList --> DumpYAML["Dump to YAML"]
+    end
+
+    subgraph Decryption ["Decryption Process"]
+        direction TB
+        LoadCred["Load Credentials"] --> VerifyLock{"Is Unlocked?"}
+        VerifyLock -->|No| LoadError["Raise Error"]
+        VerifyLock -->|Yes| ReadYAML["Read YAML File"]
+        ReadYAML --> ProcessCreds["Process Each Credential"]
+        ProcessCreds --> CopyCred["Create Copy of Credential"]
+        CopyCred --> CheckEncPW{"Has Encrypted\nPassword?"}
+        CheckEncPW -->|No| AddDecList["Add to Decrypted List"]
+        CheckEncPW -->|Yes| DecryptPW["Decrypt Password\n(Fernet)"]
+        DecryptPW --> UTF8["Convert to UTF-8"]
+        UTF8 --> AddDecList
+    end
+
+    subgraph KeyManagement ["Key Management"]
+        direction TB
+        MasterPW["Master Password"] --> PBKDF2["PBKDF2-HMAC-SHA256\n(480000 iterations)"]
+        Salt[".salt file"] --> PBKDF2
+        PBKDF2 --> DerivedKey["32-byte Derived Key"]
+        DerivedKey --> FernetKey["Fernet Instance"]
+    end
+
+    KeyManagement -.-> Encryption
+    KeyManagement -.-> Decryption
+    Encryption --> FileSystem
+    FileSystem --> Decryption
+```
+
+
+### Requirements
+
+- Python 3.9 or higher
+- PyQt6
+- Additional dependencies will be automatically installed
+
+## Usage
+
+After installation, you can launch TerminalTelemetry using either of these commands:
+
+```bash
+# Launch with console
+termtel
+
+# Launch without console (GUI only)
+termtel-no-con
+```
+
+### First Time Setup
+
+1. When first launched, you'll be prompted to create a master password for secure credential storage
+   - The master password is used with PBKDF2 key derivation
+   - A unique salt is generated and stored securely
+   - Credentials are encrypted using Fernet (AES-128-CBC)
+
+2. Credentials are stored securely based on your platform:
+   - Windows: Uses APPDATA directory and MachineGuid
+   - macOS: Uses Application Support directory and hardware serial
+   - Linux: Uses .config directory and machine-id
+
+3. Connect to devices using the connection panel
+   - Credentials are encrypted at rest
+   - Session data is protected in memory
+   - Machine-specific binding prevents credential theft
+
+### Theme Selection
+
+The application supports multiple themes which can be selected from the menu:
+- Cyberpunk (Default)
+- Dark Mode
+- Light Mode
 - Retro Green
 - Retro Amber
 - Neon Blue
-- Light Mode
 
-Each theme includes carefully designed color schemes for:
-- Text and backgrounds
-- Borders and decorations
-- Charts and graphs
-- Status indicators
-- UI element highlights
+## Development
 
-### Component Structure
+To set up a development environment:
 
-1. **Main Window (`TermtelWindow`)**
-   - Manages the overall application layout
-   - Handles theme switching
-   - Controls the FastAPI backend server
+```bash
+git clone https://github.com/scottpeterman/termtel.git
+cd termtel
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -e .[dev]
+```
 
-2. **Session Navigator (`SessionNavigator`)**
-   - Tree-based session management
-   - Credential handling
-   - Quick-connect functionality
+### Security Considerations for Development
 
-3. **Terminal Tabs (`TerminalTabWidget`)**
-   - Multiple terminal session management
-   - Session persistence
-   - Custom terminal emulation
-
-4. **Device Dashboard (`DeviceDashboardWidget`)**
-   - Real-time device monitoring
-   - Interface statistics
-   - Network topology information
-   - Routing table visualization
-
-5. **HUD Frame System (`LayeredHUDFrame`)**
-   - Cyberpunk-inspired frame design
-   - Dynamic corner decorations
-   - Theme-aware styling
-   - Customizable borders and effects
-
-### Security Features
-
-- Encrypted credential storage
-- Master password protection
-- Secure session handling
-- Protected device authentication
-
-## Technical Implementation
-
-### Backend Integration
-- FastAPI server for terminal communication
-- Device monitoring via NAPALM
-- Asynchronous data collection
-- Real-time updates
-
-### Frontend Framework
-- Built with PyQt6
-- SVG-based icons and decorations
-- Custom widget styling
-- Dynamic theme management
-
-### Data Visualization
-- Real-time graphing capabilities
-- Network topology visualization
-- Interface utilization monitoring
-- Custom chart theming
+When contributing, ensure:
+1. All cryptographic operations use approved algorithms
+2. Platform-specific code is properly isolated
+3. Error handling follows security best practices
+4. Regular security audits are performed
+5. Dependencies are kept updated
 
 ## Configuration
 
-The application supports:
-- Custom session configurations via YAML
-- Theme customization
-- Terminal preferences
-- Layout persistence
+The application stores its configuration in platform-specific locations:
 
-## Development Features
+```
+Windows: %APPDATA%/TerminalTelemetry/
+macOS: ~/Library/Application Support/TerminalTelemetry/
+Linux: ~/.config/TerminalTelemetry/
+```
 
-- Modular design for easy extension
-- Comprehensive theme support
-- Event-driven architecture
-- Detailed logging system
-- Error handling and recovery
+## License
 
-## Requirements
-- Python 3.x
-- PyQt6
-- NAPALM
-- FastAPI
-- Additional dependencies in requirements.txt
+This project is licensed under the GNU General Public License v3 (GPLv3).
 
-Would you like me to expand on any particular aspect of the documentation?
+## Author
+
+Scott Peterman (github.com/scottpeterman)
+
+## Acknowledgments
+
+- PyQt6 for the GUI framework
+- NAPALM for network device interaction
+- paramiko for all things SSH
+- TextFSM, thanks for the templates
+- The open-source community for various supporting libraries

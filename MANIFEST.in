@@ -1,0 +1,5 @@
+include requirements.txt
+include LICENSE
+include termtel/templates.db
+recursive-include termtel/static *
+recursive-include termtel/templates *
