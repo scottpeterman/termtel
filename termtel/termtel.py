@@ -2,6 +2,7 @@
 """
 Termtel - A PyQt6 Terminal Emulator
 """
+import os
 import sys
 import socket
 import logging
@@ -35,6 +36,40 @@ logging.basicConfig(level=logging.INFO,
                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('termtel')
 
+
+def initialize_sessions():
+    # Create sessions directory if it doesn't exist
+    sessions_dir = os.path.join(os.getcwd(), 'sessions')
+    os.makedirs(sessions_dir, exist_ok=True)
+
+    sessions_file = os.path.join(sessions_dir, 'sessions.yaml')
+
+    if not os.path.exists(sessions_file):
+        default_sessions = {
+            'folders': [
+                {
+                    'folder_name': '0 - Linux Sessions',
+                    'sessions': [
+                        {
+                            'DeviceType': 'Linux',
+                            'Model': 'Sample Linux Host',
+                            'SerialNumber': '',
+                            'SoftwareVersion': '',
+                            'Vendor': 'Generic',
+                            'credsid': '1',
+                            'display_name': 'Sample Linux Host',
+                            'host': '192.168.1.100',
+                            'port': '22'
+                        }
+                    ]
+                }
+            ]
+        }
+
+        with open(sessions_file, 'w') as f:
+            yaml.dump(default_sessions, f, default_flow_style=False)
+
+    return sessions_file
 
 class FastAPIServer(QThread):
     def __init__(self, app, port: int):
@@ -442,6 +477,7 @@ class TermtelWindow(QMainWindow):
 
 def main():
     """TerminalTelemetry - A modern terminal emulator."""
+    initialize_sessions()
 
     app = QApplication(sys.argv)
     app.setApplicationName("TerminalTelemetry")
