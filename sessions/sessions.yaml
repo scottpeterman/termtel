@@ -7,5 +7,5 @@
     Vendor: Ubuntu
     credsid: '1'
     display_name: Sample Linux Host
-    host: 192.168.1.100
+    host: 10.0.0.108
     port: '22'

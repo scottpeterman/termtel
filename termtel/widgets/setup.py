@@ -150,7 +150,7 @@ def setup_menus(window):
 
 def show_session_manager(window):
     """Launch the session manager dialog"""
-    from widgets.session_editor import SessionEditorDialog
+    from termtel.widgets.session_editor import SessionEditorDialog
 
     dialog = SessionEditorDialog(window, session_file=window.session_file_with_path)
     if dialog.exec() == dialog.DialogCode.Accepted:
