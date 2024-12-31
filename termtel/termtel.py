@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Termtel - A PyQt6 Terminal Emulator
+Termtel - A PyQt6 Terminal Emulator For Network Engineers
 """
 import os
 import sys
@@ -8,9 +8,6 @@ import socket
 import logging
 import yaml
 
-# from webmain import app  # Import the FastAPI app
-# Update settings before starting server
-# Import config first
 from termtel.config import settings
 
 # Now import app after config
@@ -38,24 +35,24 @@ logger = logging.getLogger('termtel')
 
 
 def initialize_sessions():
-    # Create sessions directory if it doesn't exist
-    sessions_dir = os.path.join(os.getcwd(), 'sessions')
-    os.makedirs(sessions_dir, exist_ok=True)
+    try:
+        # Use absolute path from user's home directory instead of CWD
+        sessions_dir = os.path.expanduser('./sessions')
+        os.makedirs(sessions_dir, exist_ok=True)
 
-    sessions_file = os.path.join(sessions_dir, 'sessions.yaml')
+        sessions_file = os.path.join(sessions_dir, 'sessions.yaml')
 
-    if not os.path.exists(sessions_file):
-        default_sessions = {
-            'folders': [
+        if not os.path.exists(sessions_file):
+            default_sessions = [
                 {
                     'folder_name': '0 - Linux Sessions',
                     'sessions': [
                         {
                             'DeviceType': 'Linux',
-                            'Model': 'Sample Linux Host',
+                            'Model': '',
                             'SerialNumber': '',
                             'SoftwareVersion': '',
-                            'Vendor': 'Generic',
+                            'Vendor': 'Ubuntu',
                             'credsid': '1',
                             'display_name': 'Sample Linux Host',
                             'host': '192.168.1.100',
@@ -64,13 +61,18 @@ def initialize_sessions():
                     ]
                 }
             ]
-        }
+            try:
+                with open(sessions_file, 'w') as f:
+                    yaml.safe_dump(default_sessions, f, default_flow_style=False)
+            except OSError as e:
+                logger.error(f"Failed to write sessions file: {e}")
+                raise
 
-        with open(sessions_file, 'w') as f:
-            yaml.dump(default_sessions, f, default_flow_style=False)
+        return sessions_file
 
-    return sessions_file
-
+    except Exception as e:
+        logger.error(f"Failed to initialize sessions: {e}")
+        raise
 class FastAPIServer(QThread):
     def __init__(self, app, port: int):
         super().__init__()
