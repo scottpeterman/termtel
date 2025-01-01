@@ -467,31 +467,68 @@ class TermtelWindow(QMainWindow):
             self.server_thread.wait()
         event.accept()
 
+#
+# import sys
+# import os
+# from PyQt6.QtWidgets import QApplication
+# import logging
+# from pathlib import Path
+
+
+def setup_logging():
+    """Configure logging to write to a file instead of stdout."""
+    log_dir = Path.home() / "./TerminalTelemetry" / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    log_file = log_dir / "termtel.log"
+    logging.basicConfig(
+        filename=str(log_file),
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+
+def redirect_output():
+    """Redirect stdout and stderr to devnull when running in GUI mode."""
+    if hasattr(sys, 'frozen'):  # Running as compiled executable
+        sys.stdout = open(os.devnull, 'w')
+        sys.stderr = open(os.devnull, 'w')
+    else:  # Running from pythonw
+        if sys.executable.endswith('pythonw.exe'):
+            sys.stdout = open(os.devnull, 'w')
+            sys.stderr = open(os.devnull, 'w')
 
 
 def main():
     """TerminalTelemetry - A modern terminal emulator."""
-    initialize_sessions()
-    app = QApplication(sys.argv)
-    app.setApplicationName("TerminalTelemetry")
+    # Set up logging before anything else
+    setup_logging()
 
-    # Enable remote debugging --webEngineArgs --remote-debugging-port=9120
-    # from PyQt6.QtCore import Qt
-    # QCoreApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
-    theme = "cyberpunk"
-    # Create theme manager instance
-    theme_manager = ThemeLibrary()
+    # Redirect output if running in GUI mode
+    redirect_output()
 
-    # Validate theme
-    if theme not in theme_manager.themes:
-        logger.warning(f"Theme '{theme}' not found, using 'cyberpunk'")
-        theme = 'cyberpunk'
+    try:
+        initialize_sessions()
+        app = QApplication(sys.argv)
+        app.setApplicationName("TerminalTelemetry")
 
-    window = TermtelWindow(theme=theme)
-    window.show()
+        theme = "cyberpunk"
+        # Create theme manager instance
+        theme_manager = ThemeLibrary()
 
-    sys.exit(app.exec())
+        # Validate theme
+        if theme not in theme_manager.themes:
+            logging.warning(f"Theme '{theme}' not found, using 'cyberpunk'")
+            theme = 'cyberpunk'
+
+        window = TermtelWindow(theme=theme)
+        window.show()
+
+        return app.exec()
+    except Exception as e:
+        logging.exception("Fatal error in main")
+        raise
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

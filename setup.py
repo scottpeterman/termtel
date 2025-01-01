@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="TerminalTelemetry",
-    version="0.9",
+    version="0.9.1",
     author="Scott Peterman",
     author_email="scottpeterman@gmail.com",
     description="Terminal Telemetry - A PyQt6 Terminal Emulator with Device Telemetry",
@@ -36,9 +36,11 @@ setup(
     ],
 entry_points={
         'console_scripts': [
+            'termtel-con=termtel.termtel:main',
+        ],
+        'gui_scripts': [
             'termtel=termtel.termtel:main',
         ],
-
     },
     python_requires=">=3.9",
 )
