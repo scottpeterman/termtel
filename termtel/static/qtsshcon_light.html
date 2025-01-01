@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTERM</title>
+  <title>WebEngine Terminal</title>
+    <link rel="stylesheet" href="xterm.min.css" />
+    <script src="xterm.min.js"></script>
+    <script src="xterm-addon-fit.min.js"></script>
+
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<style>
+.container {
+ position:fixed;top:0;bottom:0;left:0;right:0;width:auto;height:auto;z-index:255;
+
+};
+.expand-div {
+  grid-row: 1;
+};
+
+</style>
+
+</head>
+<!--<body style="background-color:#141414;">-->
+<body>
+<!--    <div id="terminal" style="background-color: white; height: 1000px;"></div>-->
+<div id="terminal" style="overflow: hidden;"></div>
+
+<script src="sshconfrontend_light.js"></script>
+</body>
+</html>

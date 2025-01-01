@@ -1,0 +1,254 @@
+    /* Flexbox setup for the full page */
+.flex-row {
+    display: flex;
+    flex-wrap: nowrap;
+    height: 80vh; /* 100% of the viewport height */
+}
+
+.sidebar {
+    flex: 0 0 25%; /* Sidebar takes up 25% of the width when visible */
+    transition: flex-basis 0.5s ease; /* Transition for flex-basis */
+    /* Other styles... */
+}
+
+.main-content {
+    flex: 1; /* Main content takes up the remaining space */
+    transition: flex-basis 0.5s ease; /* Transition for flex-basis */
+    /* Other styles... */
+}
+
+.sidebar.closed {
+    flex: 0 0 0%; /* Sidebar doesn't take up any space when closed */
+    /* Other styles... */
+}
+
+
+/* Ensure the terminal control takes up the full height */
+.terminal-control {
+    flex-grow: 1; /* Allows it to grow and fill the space */
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* Adjust padding as necessary */
+    /* Add your other terminal control styles here */
+}
+/* Main content styles */
+.main-content {
+    flex: 1; /* Main content takes the rest of the space */
+    display: flex;
+    flex-direction: column;
+    /* Add your other main content styles here */
+}
+.main-content-expanded {
+    width: 100%; /* Make main content take full width when sidebar is hidden */
+}
+/* Ensure the terminal control takes up the full height */
+/*.terminal-control {*/
+/*    flex-grow: 1; !* Allows it to grow and fill the space *!*/
+/*    flex-direction: column;*/
+/*    padding: 0; !* Adjust padding as necessary *!*/
+
+/*    !* Add your other terminal control styles here *!*/
+/*}*/
+/* Main content styles */
+.main-content {
+    flex: 1; /* Main content takes the rest of the space */
+    display: flex;
+    flex-direction: column;
+    /* Add your other main content styles here */
+}
+
+@media (max-width: 768px) {
+    .flex-row {
+        flex-direction: column;
+    }
+
+    .sidebar,
+    .main-content {
+        width: 100%; /* Full width on smaller screens */
+    }
+
+    .terminal-control {
+        padding: 1rem; /* Adjust padding as necessary */
+    }
+}
+
+/* Styles for active tab and button */
+.active-tab {
+    display: block; /* Show the active tab */
+}
+
+
+/* Always show the hamburger icon */
+.hamburger {
+    display: block; /* Make hamburger always visible */
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-color) !important;
+
+}
+
+/* Sidebar open/close state */
+.sidebar.open {
+    transform: translateX(0); /* Slide in */
+}
+
+.sidebar.closed {
+    transform: translateX(-100%); /* Slide off-screen */
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Full width on smaller screens */
+    }
+    .hamburger-container {
+        position: absolute;
+        z-index: 10; /* Make sure it's above other elements */
+    }
+}
+/* Style for the tabs container to take the full available space */
+.tabs {
+    flex-grow: 1; /* Allow the tabs container to fill the space */
+    width: 100%; /* Full width of its parent */
+    display: flex;
+    flex-direction: column;
+    /*background: #2d3748; !* Adjust background as needed *!*/
+}
+
+.top {
+    flex-shrink: 0; /* Ensures the tab headers don't shrink */
+    /* Rest of your styles... */
+}
+
+.center {
+    flex-grow: 1; /* Allows the tab content to take up available vertical space */
+    flex-shrink: 1;
+    position: relative; /* Position relative for absolutely positioned tab contents */
+    overflow: hidden; /* Hide overflow */
+}
+
+.tab {
+    position: absolute;
+    width: 100%; /* Full width */
+    height: 90%; /* Full available height */
+    top: 0;
+    left: 0;
+    /* Rest of your styles... */
+}
+
+.xterm {
+    height: 100%; /* Full height of the tab */
+    overflow: auto; /* Scrollbar if content overflows */
+    /* Rest of your styles... */
+}
+.bg-accordion-header {
+    background-color: var(--bg-accordion-header) !important;
+    color: var(--text-accordion) !important;
+    outline: 2px solid var(--border-focus);
+    box-shadow: none;
+}
+.bg-accordion-content {
+    outline: 2px solid var(--border-focus);
+    box-shadow: none;
+}
+.connect {
+    outline: 2px solid var(--border-focus) !important;
+    background-color: var(--bg-button-hover) !important;
+    background: var(--bg-button) !important;;
+    box-shadow: none;
+}
+
+
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    width: 200px;
+    background: #363636;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 5px #999;
+}
+
+.context-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.context-menu ul li {
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.context-menu ul li:hover {
+    background-color: #505050;
+}
+
+.hidden {
+    display: none;
+}
+
+     .modal {
+         display: none; /* Hidden by default */
+         justify-content: center; /* Center horizontally */
+         align-items: center; /* Center vertically */
+         position: fixed; /* Stay in place */
+         z-index: 1000; /* Sit on top */
+         left: 0;
+         top: 0;
+         width: 100%; /* Full width */
+         height: 100%; /* Full height */
+         overflow: auto; /* Enable scroll if needed */
+         background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+     }
+
+    /* Modal Content/Box */
+    .modal-content {
+        background-color: var(--bg-sidebar); /* Using the sidebar background variable */
+        color: var(--text-color); /* Text color from the theme */
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid var(--border-color); /* Border color from the theme */
+        width: 40%; /* Adjust width as needed */
+        border-radius: 5px; /* Soft rounded corners */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5); /* A subtle shadow for depth */
+    }
+
+    /* Close button in the modal */
+    .close-button {
+        float: right;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--text-color); /* Text color from the theme */
+        cursor: pointer;
+    }
+
+    /* Input fields within the modal */
+    .modal input[type="text"],
+    .modal input[type="password"] {
+        width: 95%;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border: 1px solid var(--border-color); /* Border color from the theme */
+        border-radius: 5px;
+        background-color: var(--bg-input); /* Input background from the theme */
+        color: var(--text-color); /* Text color from the theme */
+    }
+
+    /* Submit button within the modal */
+    .modal button[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: var(--bg-button); /* Button background from the theme */
+        color: var(--text-button); /* Button text color from the theme */
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .modal button[type="submit"]:hover {
+        background-color: var(--bg-button-hover); /* Button hover background from the theme */
+    }
+

@@ -1,13 +1,18 @@
 #!/usr/bin/env python3
 """
-Termtel - A PyQt6 Terminal Emulator For Network Engineers
+Termtel - A PyQt6 Terminal Emulator
 """
 import os
 import sys
 import socket
 import logging
+from pathlib import Path
+
 import yaml
 
+# from webmain import app  # Import the FastAPI app
+# Update settings before starting server
+# Import config first
 from termtel.config import settings
 
 # Now import app after config
@@ -35,44 +40,29 @@ logger = logging.getLogger('termtel')
 
 
 def initialize_sessions():
-    try:
-        # Use absolute path from user's home directory instead of CWD
-        sessions_dir = os.path.expanduser('./sessions')
-        os.makedirs(sessions_dir, exist_ok=True)
+    sessions_dir = Path('./sessions')
+    sessions_dir.mkdir(exist_ok=True)
 
-        sessions_file = os.path.join(sessions_dir, 'sessions.yaml')
+    # Check for sessions.yaml
+    sessions_file = sessions_dir / 'sessions.yaml'
+    default_config = '''- folder_name: Example
+  sessions:
+  - DeviceType: linux
+    Model: Thinkstation 
+    SerialNumber: ''
+    SoftwareVersion: ''
+    Vendor: Lenovo
+    credsid: '1'
+    display_name: T1000
+    host: 10.0.0.104
+    port: '22'
+    '''
+    # Write the default configuration to sessions.yaml
+    with sessions_file.open('w') as f:
+        f.write(default_config)
 
-        if not os.path.exists(sessions_file):
-            default_sessions = [
-                {
-                    'folder_name': '0 - Linux Sessions',
-                    'sessions': [
-                        {
-                            'DeviceType': 'Linux',
-                            'Model': '',
-                            'SerialNumber': '',
-                            'SoftwareVersion': '',
-                            'Vendor': 'Ubuntu',
-                            'credsid': '1',
-                            'display_name': 'Sample Linux Host',
-                            'host': '192.168.1.100',
-                            'port': '22'
-                        }
-                    ]
-                }
-            ]
-            try:
-                with open(sessions_file, 'w') as f:
-                    yaml.safe_dump(default_sessions, f, default_flow_style=False)
-            except OSError as e:
-                logger.error(f"Failed to write sessions file: {e}")
-                raise
+    return sessions_file
 
-        return sessions_file
-
-    except Exception as e:
-        logger.error(f"Failed to initialize sessions: {e}")
-        raise
 class FastAPIServer(QThread):
     def __init__(self, app, port: int):
         super().__init__()
@@ -101,13 +91,12 @@ class TermtelWindow(QMainWindow):
         self.theme = self.settings_manager.get_app_theme()
         self.master_password = None
         # Initialize UI before applying theme
-        setup_menus(self)
         self.init_ui()
 
         self.theme_manager.apply_theme(self, self.theme)
         self.initialize_credentials()
 
-        self.start_server()
+        # self.start_server()
         self.session_navigator.connect_requested.connect(self.handle_session_connect)
 
     def launch_telemetry(self):
@@ -309,10 +298,10 @@ class TermtelWindow(QMainWindow):
         screen_geometry = screen.availableGeometry()
         width = int(screen_geometry.width() * 0.8)
         self.width = width
-        height = int(screen_geometry.height() * 0.8)
+        height = int(screen_geometry.height() * 0.7)
         center_point = screen_geometry.center()
         self.setGeometry(center_point.x() - width // 2, center_point.y() - height // 2, width, height)
-
+        self.setMinimumSize(800, 500)  # Reasonable minimum size
         self.main_frame = LayeredHUDFrame(self, theme_manager=self.theme_manager, theme_name=self.theme)
         self.setCentralWidget(self.main_frame)
 
@@ -335,7 +324,7 @@ class TermtelWindow(QMainWindow):
         nav_layout = QVBoxLayout()
         nav_frame.content_layout.addLayout(nav_layout)
         nav_layout.addWidget(self.session_navigator)
-        nav_frame.setMinimumWidth(250)
+        nav_frame.setMinimumWidth(150)
         nav_frame.setMaximumWidth(400)
         self.terminal_splitter.addWidget(nav_frame)
 
@@ -351,16 +340,18 @@ class TermtelWindow(QMainWindow):
         self.main_splitter.addWidget(left_container)
 
         # Add telemetry panel
-        telemetry_frame = LayeredHUDFrame(self, theme_manager=self.theme_manager, theme_name=self.theme)
+        self.telemetry_frame = LayeredHUDFrame(self, theme_manager=self.theme_manager, theme_name=self.theme)
         self.telemetry = DeviceDashboardWidget(parent=self)
         telemetry_layout = QVBoxLayout()
-        telemetry_frame.content_layout.addLayout(telemetry_layout)
+        self.telemetry_frame.content_layout.addLayout(telemetry_layout)
         telemetry_layout.addWidget(self.telemetry)
-        self.main_splitter.addWidget(telemetry_frame)
+        self.main_splitter.addWidget(self.telemetry_frame)
 
         # Set proportions
         self.main_splitter.setSizes([int(width * 0.6), int(width * 0.4)])
         self.terminal_splitter.setSizes([250, width - 250])
+        setup_menus(self)
+
 
     def switch_theme(self, theme_name: str):
         """Override switch_theme to save the preference."""
@@ -382,6 +373,7 @@ class TermtelWindow(QMainWindow):
         mapped_theme = THEME_MAPPING.get(theme_name, "Cyberpunk")  # Default to Cyberpunk if no mapping
         self.terminal_tabs.update_theme(mapped_theme)
 
+        self.telemetry.change_theme(theme_name)
         # Update the application palette based on theme
         if theme_name in ['light_mode']:
             self.apply_light_palette()
@@ -480,11 +472,10 @@ class TermtelWindow(QMainWindow):
 def main():
     """TerminalTelemetry - A modern terminal emulator."""
     initialize_sessions()
-
     app = QApplication(sys.argv)
     app.setApplicationName("TerminalTelemetry")
 
-    # Enable remote debugging
+    # Enable remote debugging --webEngineArgs --remote-debugging-port=9120
     # from PyQt6.QtCore import Qt
     # QCoreApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
     theme = "cyberpunk"

@@ -848,6 +848,7 @@ class LayeredHUDFrame(QFrame):
         self.theme_name = theme_name
         self.update_theme_colors()
 
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         w, h = self.width(), self.height()
@@ -1103,10 +1104,11 @@ THEME_MAPPING = {
     "retro_amber": "Amber",
     "neon_blue": "Neon"
 }
+
 terminal_themes = {
     "Cyberpunk": {
         "js": """
-        window.currentTerminal.setOption('theme', {
+        term.setOption('theme', {
             foreground: '#0affff',
             background: '#121212',
             cursor: '#0a8993'
@@ -1119,6 +1121,11 @@ terminal_themes = {
         }
 
         window.themeStyle.innerHTML = `
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+            }
             .xterm-viewport::-webkit-scrollbar {
                 width: 12px;
             }
@@ -1132,11 +1139,13 @@ terminal_themes = {
                 background: #0affff;
             }
         `;
+
+        fitAddon.fit();
         """
     },
     "Dark": {
         "js": """
-        window.currentTerminal.setOption('theme', {
+        term.setOption('theme', {
             foreground: '#ffffff',
             background: '#1e1e1e',
             cursor: '#ffffff'
@@ -1149,6 +1158,11 @@ terminal_themes = {
         }
 
         window.themeStyle.innerHTML = `
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+            }
             .xterm-viewport::-webkit-scrollbar {
                 width: 12px;
             }
@@ -1162,11 +1176,13 @@ terminal_themes = {
                 background: #555;
             }
         `;
+
+        fitAddon.fit();
         """
     },
     "Light": {
         "js": """
-        window.currentTerminal.setOption('theme', {
+        term.setOption('theme', {
             foreground: '#000000',
             background: '#ffffff',
             cursor: '#000000'
@@ -1179,6 +1195,11 @@ terminal_themes = {
         }
 
         window.themeStyle.innerHTML = `
+            body {
+                background-color: #ffffff;
+                margin: 0;
+                padding: 0;
+            }
             .xterm-viewport::-webkit-scrollbar {
                 width: 12px;
             }
@@ -1192,11 +1213,13 @@ terminal_themes = {
                 background: #666;
             }
         `;
+
+        fitAddon.fit();
         """
     },
     "Green": {
         "js": """
-        window.currentTerminal.setOption('theme', {
+        term.setOption('theme', {
             foreground: '#00ff00',
             background: '#000000',
             cursor: '#00ff00'
@@ -1209,6 +1232,11 @@ terminal_themes = {
         }
 
         window.themeStyle.innerHTML = `
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+            }
             .xterm-viewport::-webkit-scrollbar {
                 width: 12px;
             }
@@ -1222,11 +1250,13 @@ terminal_themes = {
                 background: #00cc00;
             }
         `;
+
+        fitAddon.fit();
         """
     },
     "Amber": {
         "js": """
-        window.currentTerminal.setOption('theme', {
+        term.setOption('theme', {
             foreground: '#ffb000',
             background: '#000000',
             cursor: '#ffb000'
@@ -1239,6 +1269,11 @@ terminal_themes = {
         }
 
         window.themeStyle.innerHTML = `
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+            }
             .xterm-viewport::-webkit-scrollbar {
                 width: 12px;
             }
@@ -1252,11 +1287,13 @@ terminal_themes = {
                 background: #cc8d00;
             }
         `;
+
+        fitAddon.fit();
         """
     },
     "Neon": {
         "js": """
-        window.currentTerminal.setOption('theme', {
+        term.setOption('theme', {
             foreground: '#ff00ff',
             background: '#000000',
             cursor: '#ff00ff'
@@ -1269,6 +1306,11 @@ terminal_themes = {
         }
 
         window.themeStyle.innerHTML = `
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+            }
             .xterm-viewport::-webkit-scrollbar {
                 width: 12px;
             }
@@ -1282,9 +1324,10 @@ terminal_themes = {
                 background: #cc00cc;
             }
         `;
+
+        fitAddon.fit();
         """
     }
 }
-
 if __name__ == "__main__":
     main()

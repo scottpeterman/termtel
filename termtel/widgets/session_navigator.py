@@ -284,22 +284,19 @@ class SessionNavigator(QWidget):
                 return True
             return text.lower() in item.text(0).lower()
 
-        if self.netbox_check.isChecked():
-            # TODO: Implement NetBox search
-            pass
-        else:
+
             # Local search
-            for folder_idx in range(self.session_tree.topLevelItemCount()):
-                folder_item = self.session_tree.topLevelItem(folder_idx)
-                folder_visible = False
+        for folder_idx in range(self.session_tree.topLevelItemCount()):
+            folder_item = self.session_tree.topLevelItem(folder_idx)
+            folder_visible = False
 
-                for session_idx in range(folder_item.childCount()):
-                    session_item = folder_item.child(session_idx)
-                    matches = match_item(session_item, text)
-                    session_item.setHidden(not matches)
-                    folder_visible = folder_visible or matches
+            for session_idx in range(folder_item.childCount()):
+                session_item = folder_item.child(session_idx)
+                matches = match_item(session_item, text)
+                session_item.setHidden(not matches)
+                folder_visible = folder_visible or matches
 
-                folder_item.setHidden(not folder_visible)
+            folder_item.setHidden(not folder_visible)
 
     def show_context_menu(self, position):
         """Show context menu for session items."""

@@ -1,0 +1,186 @@
+:root {
+    /* Dark theme colors */
+    --bg-main: #1e1e1e !important; /* Dark grey for the main background */
+    --bg-sidebar: #252525 !important; /* Slightly lighter grey for the sidebar */
+    --bg-accordion: #333333; /* Even lighter grey for the accordion background */
+    --bg-accordion-header: #3c3c3c; /* Slightly darker grey for accordion headers */
+    --bg-accordion-content: #1e1e1e; /* Same as main background for content */
+    --bg-button: #4a4a4a; /* Dark grey for buttons */
+    --bg-scroll: #4a4a4a; /* Dark grey for scrollbars */
+    --bg-thumb-active: #666666; /* Dark grey for scrollbar thumb */
+    --bg-thumb-hover: #888888; /* Lighter grey on hover */
+    --bg-button-hover: #5a5a5a; /* Slightly lighter grey for button hover state */
+    --bg-input: #242424; /* Darker grey for input fields */
+    --bg-tab: #333333; /* Slightly lighter grey for tabs */
+    --bg-tab-active: #404040; /* Lighter grey for active tab */
+    --text-color: #e4e4e4; /* Light grey for text for contrast */
+    --text-accordion: #e4e4e4; /* Same as general text for accordion text */
+    --text-button: #e0e0e0; /* Same as general text for button text */
+    --text-tab: #e4e4e4; /* Light grey for tabs */
+    --text-tab-inactive: #888888; /* Grey for inactive tabs */
+    --border-color: #555555; /* Dark grey for borders */
+    --border-focus: #777777; /* Slightly lighter grey for focus border */
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-color);
+}
+
+.custom-bg-color {
+    background-color: var(--bg-sidebar); /* Use your chosen variable color */
+}
+
+#tab-contents {
+    position: relative;
+    background-color: var(--bg-main);
+}
+
+.sidebar {
+    background-color: var(--bg-sidebar);
+}
+
+.accordion-header {
+    background-color: var(--bg-accordion-header);
+}
+
+.accordion-content {
+    background-color: var(--bg-accordion-content);
+    color: var(--text-accordion);
+}
+
+.button {
+    background-color: var(--bg-button);
+    color: var(--text-button);
+}
+
+.button:hover {
+    background-color: var(--bg-button-hover);
+}
+
+.form-input {
+    background-color: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.form-input:focus {
+    outline: 2px solid var(--border-focus);
+    box-shadow: none;
+}
+
+.tab-button {
+    background-color: var(--bg-tab);
+    color: var(--text-tab-inactive);
+    padding: 0.5em 1em;
+    margin-right: 0.5em;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.tab-button:hover {
+    background-color: var(--bg-button-hover);
+}
+
+.tab-button.active-button {
+    background-color: var(--bg-tab-active);
+    color: var(--text-tab);
+    border-bottom: 1px solid var(--bg-main);
+}
+
+#tab-contents {
+    border: 1px solid var(--border-color);
+}
+
+.active-tab {
+    border-top: none;
+}
+
+#tab-buttons {
+    background-color: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-content {
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    padding: 1em;
+    border-radius: 0 0 5px 5px;
+    display: none;
+}
+
+.active-tab .tab-content {
+    display: block;
+}
+
+.form-input {
+    background-color: var(--bg-input);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.form-input:focus {
+    outline: 2px solid var(--border-focus);
+}
+
+.button {
+    background-color: var(--bg-button);
+    color: var(--text-button);
+}
+
+.button:hover {
+    background-color: var(--bg-button-hover);
+}
+
+.search-input {
+    border-bottom: 2px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-color);
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-scroll);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-thumb-active);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-thumb-hover);
+}
+
+.bg-light, .bg-white {
+    background-color: #000 !important;
+}
+
+/* Styles for Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-thumb-active) var(--bg-scroll);
+}
+
+::-webkit-scrollbar {
+    width: 12px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-scroll) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-thumb-active) !important;
+    border-radius: 6px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bg-thumb-hover) !important;
+}

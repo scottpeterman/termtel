@@ -601,13 +601,15 @@ class DeviceDashboardWidget(QMainWindow):
     # Update the update_device_info method
 
     def update_device_info(self, facts):
+        """Modified update_device_info to use theme colors"""
         try:
             self.device_info.clear()
             theme_colors = self.theme_manager.get_colors(self._current_theme)
 
             # Update device icon based on facts
             self.set_device_icon(facts=facts)
-
+            # Store facts for theme changes
+            self.current_facts = facts
             # Define key-value pairs to display
             key_facts = [
                 ("Hostname", facts.get('hostname', 'N/A')),
@@ -619,7 +621,7 @@ class DeviceDashboardWidget(QMainWindow):
                 ("Vendor", facts.get('vendor', 'N/A'))
             ]
 
-            # Add each fact as a new QTreeWidgetItem
+            # Add each fact with theme-consistent colors
             for key, value in key_facts:
                 item = QTreeWidgetItem()
                 item.setText(0, key)
@@ -630,11 +632,10 @@ class DeviceDashboardWidget(QMainWindow):
 
             self.device_info.resizeColumnToContents(0)
             self.device_info.resizeColumnToContents(1)
-            print("Device info updated with keys and values.")
+
         except Exception as e:
             print("Error updating device info:", str(e))
             traceback.print_exc()
-
 
     def parse_speed(self, speed_str, bandwidth_str):
         # Try SPEED field first
@@ -923,7 +924,7 @@ class DeviceDashboardWidget(QMainWindow):
             traceback.print_exc()
 
     def setup_chart(self):
-        """Setup the chart configuration."""
+        """Modified setup_chart to ensure consistent theme colors"""
         theme_colors = self.theme_manager.get_colors(self._current_theme)
 
         # Clear and configure chart
@@ -935,11 +936,16 @@ class DeviceDashboardWidget(QMainWindow):
         self.chart.legend().setVisible(False)
         self.chart.setMargins(QMargins(20, 20, 20, 20))
 
+        # Configure title
+        title_font = QFont("Courier New", 10, QFont.Weight.Bold)
+        self.chart.setTitleFont(title_font)
+        self.chart.setTitleBrush(QColor(theme_colors['text']))
+
         # Remove existing axes
         for axis in self.chart.axes():
             self.chart.removeAxis(axis)
 
-        # Create new axes
+        # Create and configure axes
         self.axis_x = QValueAxis()
         self.axis_y = QValueAxis()
 
@@ -956,17 +962,18 @@ class DeviceDashboardWidget(QMainWindow):
             axis.setTitleFont(title_font)
             axis.setTitleBrush(QColor(theme_colors['text']))
 
-        # Configure X axis
-        self.axis_x.setRange(0, 30)  # 30 second window
-        self.axis_x.setTitleText("TIME (s)")
+        # Configure ranges
+        self.axis_x.setRange(0, 30)
+        self.axis_y.setRange(0, 20)
 
-        # Configure Y axis
-        self.axis_y.setRange(0, 20)  # 0-20% default range
+        # Set titles
+        self.axis_x.setTitleText("TIME (s)")
         self.axis_y.setTitleText("UTILIZATION %")
 
         # Add axes to chart
         self.chart.addAxis(self.axis_x, Qt.AlignmentFlag.AlignBottom)
         self.chart.addAxis(self.axis_y, Qt.AlignmentFlag.AlignLeft)
+
     def update_neighbors(self, data):
         self.lldp_tree.clear()
         lldp = data.get('lldp', {})
@@ -1005,9 +1012,131 @@ class DeviceDashboardWidget(QMainWindow):
         self.refresh_timer.stop()
 
     def change_theme(self, theme_name):
+        """Handle theme changes for the dashboard"""
         self._current_theme = theme_name
+        theme_colors = self.theme_manager.get_colors(theme_name)
+
+        # Update main theme
         self.theme_manager.apply_theme(self, theme_name)
+
+        # Update all LayeredHUDFrame containers
+        for frame in [self.device_info_widget, self.interfaces_widget,
+                      self.neighbors_widget, self.route_widget]:
+            frame.set_theme(theme_name)
+
+        # Update chart and its components
         self.setup_chart()
+        if hasattr(self, 'interface_history') and self.interfaces_tree.selectedItems():
+            self.update_interface_graph()  # Refresh current graph with new colors
+
+        # Refresh device info if we have facts
+        if hasattr(self, 'current_facts'):
+            self.update_device_info(self.current_facts)
+
+        # Update device info tree styling
+        tree_style = f"""
+            QTreeWidget {{
+                background-color: transparent;
+                border: none;
+                color: {theme_colors['text']};
+                outline: none;
+            }}
+            QTreeWidget::item {{
+                padding: 5px;
+                border: none;
+            }}
+            QTreeWidget::item:selected {{
+                background-color: {theme_colors['selected_bg']};
+            }}
+            QHeaderView::section {{
+                background-color: transparent;
+                color: {theme_colors['text']};
+                border: none;
+                border-bottom: 1px solid {theme_colors['text']};
+                padding: 5px;
+                font-family: "Courier New";
+                font-weight: bold;
+            }}
+        """
+
+        # Apply styling to all tree widgets
+        for tree in [self.device_info, self.interfaces_tree,
+                     self.lldp_tree, self.arp_tree, self.route_tree]:
+            tree.setStyleSheet(tree_style)
+
+            # Update text colors for all existing items
+            self.update_tree_item_colors(tree, theme_colors['text'])
+
+        # Update device icon
+        self.set_device_icon()
+
+        # Force visual update
+        self.update()
+    def update_tree_item_colors(self, tree, color):
+        """Recursively update colors for all items in a tree widget"""
+        root = tree.invisibleRootItem()
+        self._update_tree_item_colors_recursive(root, color)
+
+    def _update_tree_item_colors_recursive(self, item, color):
+        """Helper method to recursively update tree item colors"""
+        for i in range(item.columnCount()):
+            item.setForeground(i, QColor(color))
+
+        for i in range(item.childCount()):
+            self._update_tree_item_colors_recursive(item.child(i), color)
+        theme_colors = self.theme_manager.get_colors(self._current_theme)
+
+        # Update route raw output styling
+        # self.route_raw.setStyleSheet(f"""
+        #     QTextEdit {{
+        #         background-color: transparent;
+        #         color: {self.theme_manager.themes['text']};
+        #         border: none;
+        #     }}
+        # """)
+
+        # Update tabs styling
+        tab_style = f"""
+            QTabWidget::pane {{
+                border: none;
+                background: transparent;
+            }}
+            QTabBar::tab {{
+                background: transparent;
+                border: 1px solid {theme_colors['text']};
+                padding: 5px;
+                color: {theme_colors['text']};
+            }}
+            QTabBar::tab:selected {{
+                background: {theme_colors['selected_bg']};
+            }}
+        """
+        self.neighbors_tabs.setStyleSheet(tab_style)
+        self.route_tabs.setStyleSheet(tab_style)
+
+        # Update device icon with new theme colors
+        self.set_device_icon()
+
+        # Refresh interface colors
+        if self.is_connected:
+            self.update_interface_colors()
+
+        # Force visual update
+        self.update()
+
+    def update_interface_colors(self):
+        """Update interface status colors based on current theme"""
+        theme_colors = self.theme_manager.get_colors(self._current_theme)
+
+        # Update all interface items
+        root = self.interfaces_tree.invisibleRootItem()
+        for i in range(root.childCount()):
+            item = root.child(i)
+            status = item.text(1)
+            if status == "UP":
+                item.setForeground(1, QColor(theme_colors['success']))
+            else:
+                item.setForeground(1, QColor(theme_colors['error']))
 
     def find_longest_prefix_match(self):
         try:

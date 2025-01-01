@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTERM</title>
+    <link rel="stylesheet" href="xterm.min.css" />
+    <script src="xterm.min.js"></script>
+    <script src="xterm-addon-fit.min.js"></script>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        body {
+            background-color: #141414;
+            display: flex;
+            flex-direction: column;
+        }
+        #terminal {
+            flex: 1;
+            height: 100vh;
+        }
+        .xterm {
+            height: 100%;
+        }
+        .xterm-viewport::-webkit-scrollbar {
+            width: 12px;
+        }
+        .xterm-viewport::-webkit-scrollbar-track {
+            background: #212121;
+        }
+        .xterm-viewport::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+        .xterm-viewport::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal"></div>
+    <script src="sshconfrontend.js"></script>
+</body>
+</html>

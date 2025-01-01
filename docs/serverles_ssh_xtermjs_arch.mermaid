@@ -1,0 +1,74 @@
+classDiagram
+    class TerminalTabWidget {
+        +Dict sessions
+        +str current_term_theme
+        +create_terminal()
+        +close_tab()
+        +update_theme()
+        +cleanup()
+    }
+
+    class Ui_Terminal {
+        +QWebEngineView view
+        +QWebChannel channel
+        +Backend backend
+        +setupUi()
+        +handle_load_finished()
+        +cleanup()
+    }
+
+    class QWebEngineView {
+        +loadFinished
+        +page()
+        +runJavaScript()
+    }
+
+    class Backend {
+        +paramiko.SSHClient client
+        +paramiko.Channel channel
+        +ShellReaderThread reader_thread
+        +Signal send_output
+        +setup_shell()
+        +write_data(str)
+        +set_pty_size(str)
+    }
+
+    class ShellReaderThread {
+        +Signal data_ready
+        +str initial_buffer
+        +Channel channel
+        +run()
+        +log_data()
+    }
+
+    class WebEngineUrlSchemeHandler {
+        +requestStarted()
+    }
+
+    class ParamikoSSHClient {
+        +connect()
+        +invoke_shell()
+        +get_transport()
+    }
+
+    class ParamikoChannel {
+        +send()
+        +recv()
+        +resize_pty()
+    }
+
+    TerminalTabWidget --> Ui_Terminal : creates
+    Ui_Terminal --> QWebEngineView : contains
+    Ui_Terminal --> WebEngineUrlSchemeHandler : uses
+    Ui_Terminal --> Backend : creates
+    Backend --> ParamikoSSHClient : manages
+    Backend --> ShellReaderThread : creates
+    Backend --> ParamikoChannel : manages
+    ShellReaderThread --> ParamikoChannel : reads from
+    QWebEngineView ..> Backend : JS Bridge via QWebChannel
+
+    note for TerminalTabWidget "Manages multiple terminal instances"
+    note for Ui_Terminal "Bridges xterm.js with SSH backend"
+    note for Backend "Handles SSH connection and data flow"
+    note for ShellReaderThread "Async reading from SSH channel"
+    note for WebEngineUrlSchemeHandler "Loads local HTML/resources"

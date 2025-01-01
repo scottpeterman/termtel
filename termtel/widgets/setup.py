@@ -22,29 +22,114 @@ logger = logging.getLogger('termtel.setup')
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About Termtel")
-        self.setMinimumSize(600, 400)
+        self.setWindowTitle("About TerminalTelemetry")
+        self.setMinimumSize(800, 600)  # Increased size for better readability
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
 
         web_view = QWebEngineView()
         about_html = """
         <html>
-        <body style="background-color: #1e1e1e; color: #ffffff; font-family: Arial, sans-serif; margin: 20px;">
-            <div style="text-align: center;">
-                <img src="static/images/logo.png" alt="Termtel Logo" style="max-width: 200px;"/>
-                <h1>Termtel</h1>
-                <p>Version 1.0.0</p>
-                <p>A modern terminal emulator with advanced telemetry capabilities.</p>
-                <hr>
-                <p>Features:</p>
-                <ul style="list-style-type: none; padding: 0;">
-                    <li>✓ Multi-session support</li>
-                    <li>✓ Secure credential management</li>
-                    <li>✓ Session telemetry</li>
-                    <li>✓ Custom themes</li>
-                </ul>
-                <p>© 2024 Your Company</p>
+        <head>
+            <style>
+                body {
+                    background-color: #1e1e1e;
+                    color: #ffffff;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    line-height: 1.6;
+                    margin: 0;
+                    padding: 20px 40px;
+                }
+                .container {
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+                h1 {
+                    color: #0affff;
+                    text-align: center;
+                    font-size: 2.5em;
+                    margin-bottom: 10px;
+                }
+                h2 {
+                    color: #0affff;
+                    margin-top: 25px;
+                }
+                .subtitle {
+                    color: #888;
+                    text-align: center;
+                    font-size: 1.1em;
+                    margin-bottom: 30px;
+                }
+                .feature-list {
+                    list-style-type: none;
+                    padding: 0;
+                }
+                .feature-list li {
+                    margin: 10px 0;
+                    padding-left: 25px;
+                    position: relative;
+                }
+                .feature-list li:before {
+                    content: "✓";
+                    color: #0affff;
+                    position: absolute;
+                    left: 0;
+                }
+                .highlight {
+                    color: #0affff;
+                }
+                .footer {
+                    margin-top: 40px;
+                    text-align: center;
+                    color: #888;
+                    border-top: 1px solid #444;
+                    padding-top: 20px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>TerminalTelemetry</h1>
+                <div class="subtitle">A modern, cyberpunk-inspired terminal emulator with integrated network device monitoring capabilities.</div>
+
+                <h2>Key Features</h2>
+                <div class="feature-list">
+                    <h3>Modern Terminal Emulator</h3>
+                    <ul>
+                        <li>Multi-session support with tabbed interface</li>
+                        <li>Customizable themes (Cyberpunk, Dark Mode, Light Mode, Retro Green, Retro Amber, Neon Blue)</li>
+                        <li>Session management and quick connect functionality</li>
+                        <li>Secure credential storage</li>
+                    </ul>
+
+                    <h3>Network Device Telemetry</h3>
+                    <ul>
+                        <li>Real-time interface utilization monitoring with graphs</li>
+                        <li>Automatic device type detection</li>
+                        <li>LLDP/CDP neighbor discovery</li>
+                        <li>ARP table visualization</li>
+                        <li>Routing table analysis with prefix lookup</li>
+                        <li>Support for multiple network operating systems (Cisco IOS, Arista EOS, Cisco NXOS)</li>
+                    </ul>
+
+                    <h3>Security Features</h3>
+                    <ul>
+                        <li>PBKDF2-HMAC-SHA256 key derivation (480,000 iterations)</li>
+                        <li>Fernet (AES-128-CBC) encryption with HMAC authentication</li>
+                        <li>Platform-specific secure storage locations</li>
+                        <li>Machine-specific binding</li>
+                        <li>Rate-limited authentication</li>
+                        <li>Cross-platform secure credential management</li>
+                        <li>Zero plaintext storage of sensitive data</li>
+                    </ul>
+                </div>
+
+                <div class="footer">
+                    <p>Author: Scott Peterman (github.com/scottpeterman)</p>
+                    <p>Licensed under GNU General Public License v3 (GPLv3)</p>
+                    
+                </div>
             </div>
         </body>
         </html>
@@ -52,7 +137,6 @@ class AboutDialog(QDialog):
         web_view.setHtml(about_html)
         layout.addWidget(web_view)
         self.setLayout(layout)
-
 
 class TelemetryDialog(QDialog):
     def __init__(self, parent=None):
@@ -130,10 +214,13 @@ def setup_menus(window):
     credentials_action = view_menu.addAction("&Credentials")
     credentials_action.triggered.connect(lambda: show_credentials_dialog(window))
 
-    telemetry_action = view_menu.addAction("&Telemetry")
-    telemetry_action.triggered.connect(lambda: show_telemetry_dialog(window))
+    # Replace telemetry dialog with simple toggle
+    telemetry_action = view_menu.addAction("Show &Telemetry")
+    telemetry_action.setCheckable(True)
+    telemetry_action.setChecked(True)  # Default to visible
+    telemetry_action.triggered.connect(lambda: toggle_telemetry(window, telemetry_action))
 
-    # Tools Menu (new)
+    # Tools Menu
     tools_menu = menubar.addMenu("&Tools")
 
     netbox_action = tools_menu.addAction("&Netbox Import")
@@ -147,7 +234,9 @@ def setup_menus(window):
     about_action = help_menu.addAction("&About")
     about_action.triggered.connect(lambda: show_about_dialog(window))
 
-
+# Remove TelemetryDialog and show_telemetry_dialog since they're not needed anymore
+def toggle_telemetry(window, telemetry_action):
+    window.telemetry_frame.setVisible(telemetry_action.isChecked())
 def show_session_manager(window):
     """Launch the session manager dialog"""
     from termtel.widgets.session_editor import SessionEditorDialog

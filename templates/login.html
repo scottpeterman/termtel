@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>Verlociterm Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/dark.css">
+    <style>
+        .image-container {
+    width: 100%;
+    height: 100%; /* Make sure the container takes up the full height */
+    display: flex;
+    justify-content: center; /* Centers the image horizontally */
+    align-items: center; /* Centers the image vertically */
+    overflow: hidden; /* Ensures the image doesn't overflow the container */
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover; /* Ensures the image covers the container area */
+    height: auto; /* Keeps the aspect ratio intact */
+    width: auto; /* Keeps the aspect ratio intact */
+}
+
+    </style>
+</head>
+<body>
+    <div class="row g-0 app-auth-wrapper">
+        <div class="col-12 col-md-6 auth-main-col text-center p-5 bg-dark">
+            <div class="d-flex flex-column align-content-end">
+                <div class="app-auth-body mx-auto">
+                    <div class="app-auth-branding mb-4">
+                    </div>
+                    <h2 class="auth-heading text-center mb-5">Log in to Velociterm SSH Web</h2>
+                    <div class="auth-form-container text-start">
+                        <form id="login_form" class="auth-form login-form">
+                            <div class="email mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input id="username" name="username" type="text" class="form-control input-dark" placeholder="Username" required>
+                            </div>
+                            <div class="password mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input id="password" name="password" type="password" class="form-control input-dark" placeholder="Password" required>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary w-100 theme-btn mx-auto">Log In</button>
+                            </div>
+                        </form>
+                        <div class="alert alert-danger mt-3 d-none" role="alert" id="error-container"></div>
+                    </div>
+                </div>
+                <footer class="app-auth-footer">
+                    <div class="container text-center py-3">
+                        © 2024 Velociterm
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 h-100">
+            <div class="image-container">
+                <img src="/static/images/python2.png" alt="background image">
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('login_form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    const data = {
+        username: formData.get('username'),
+        password: formData.get('password')
+    };
+
+    async function loginToServer(data) {
+        try {
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.detail || 'Login failed');
+            }
+
+            localStorage.setItem('access_token', result.access_token);
+            window.location.href = '/';  // Redirect to home page after login
+
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    function showError(message) {
+        const errorContainer = document.getElementById('error-container');
+        errorContainer.textContent = message;
+        errorContainer.classList.remove('d-none');
+    }
+
+    loginToServer(data);
+});
+
+    </script>
+</body>
+</html>

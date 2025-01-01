@@ -1,0 +1,30 @@
+
+Home Network on GNS3 - Where Scott Plays
+
+usa1-rtr-1#
+Home Network on GNS3 - Where Scott Plays
+
+usa1-rtr-1#
+usa1-rtr-1#
+usa1-rtr-1#
+usa1-rtr-1#sh ver
+Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)M11, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Sun 16-Oct-16 07:53 by prod_rel_team
+
+ROM: ROMMON Emulation Microcode
+BOOTLDR: 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)M11, RELEASE SOFTWARE (fc2)
+
+usa1-rtr-1 uptime is 2 weeks, 5 days, 11 hours, 39 minutes
+System returned to ROM by unknown reload cause - suspect boot_data[BOOT_COUNT] 0x0, BOOT_COUNT 0, BOOTDATA 19
+System image file is "tftp://255.255.255.255/unknown"
+Last reload reason: unknown reload cause - suspect boot_data[BOOT_COUNT] 0x0, BOOT_COUNT 0, BOOTDATA 19
+
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+ --More-- 

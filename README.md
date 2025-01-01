@@ -127,8 +127,6 @@ After installation, you can launch TerminalTelemetry using either of these comma
 # Launch with console
 termtel
 
-# Launch without console (GUI only)
-termtel-no-con
 ```
 
 ### First Time Setup
