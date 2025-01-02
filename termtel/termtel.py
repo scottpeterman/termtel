@@ -45,7 +45,10 @@ def initialize_sessions():
 
     # Check for sessions.yaml
     sessions_file = sessions_dir / 'sessions.yaml'
-    default_config = '''- folder_name: Example
+
+    # Only write default config if file doesn't exist
+    if not sessions_file.exists():
+        default_config = '''- folder_name: Example
   sessions:
   - DeviceType: linux
     Model: Thinkstation 
@@ -57,12 +60,15 @@ def initialize_sessions():
     host: 10.0.0.104
     port: '22'
     '''
-    # Write the default configuration to sessions.yaml
-    with sessions_file.open('w') as f:
-        f.write(default_config)
+        # Write the default configuration to sessions.yaml
+        try:
+            with sessions_file.open('x') as f:
+                f.write(default_config)
+        except:
+            with sessions_file.open("r") as fh:
+                print(fh.read())
 
     return sessions_file
-
 class FastAPIServer(QThread):
     def __init__(self, app, port: int):
         super().__init__()
@@ -466,13 +472,6 @@ class TermtelWindow(QMainWindow):
             self.server_thread.terminate()
             self.server_thread.wait()
         event.accept()
-
-#
-# import sys
-# import os
-# from PyQt6.QtWidgets import QApplication
-# import logging
-# from pathlib import Path
 
 
 def setup_logging():
