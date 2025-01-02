@@ -1,11 +1,13 @@
 # widgets/terminal_tabs.py
+import socket
+
 from PyQt6.QtWebEngineCore import QWebEngineProfile
 from PyQt6.QtWidgets import (QTabWidget, QWidget, QVBoxLayout,
                              QMenu, QMessageBox, QSplitter)
 from PyQt6.QtCore import QUrl, pyqtSignal, Qt, QTimer
 import uuid
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 from termtel.themes2 import terminal_themes
 from termtel.widgets.qtssh_widget import Ui_Terminal
@@ -74,11 +76,45 @@ class TerminalTabWidget(QTabWidget):
                 if terminal:
                     self.apply_theme_to_terminal(terminal, theme_name)
 
+
+    def test_socket_connection(self, host: str, port: str, timeout: int = 5) -> Tuple[bool, Optional[str]]:
+        """Test if a socket connection can be established to the given host and port."""
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        try:
+            sock.connect((host, int(port)))
+            return True, None
+        except socket.timeout:
+            return False, "Connection timed out after 5 seconds"
+        except ConnectionRefusedError:
+            return False, "Connection refused - service may not be running on the specified port"
+        except socket.gaierror:
+            return False, "Could not resolve hostname"
+        except ValueError:
+            return False, "Invalid port number"
+        except Exception as e:
+            return False, str(e)
+        finally:
+            sock.close()
+
     def create_terminal(self, connection_data: Dict) -> str:
         """Create a new terminal tab."""
         session_id = connection_data.get('uuid', str(uuid.uuid4()))
 
         try:
+            # Test socket connection first
+            host = connection_data['host']
+            port = connection_data.get('port', '22')
+
+            success, error_message = self.test_socket_connection(host, port)
+            if not success:
+                QMessageBox.critical(
+                    self,
+                    "Connection Failed",
+                    f"Failed to connect to {host}:{port}\nError: {error_message}"
+                )
+                return None
+
             # Create tab container
             tab_container = QWidget()
             layout = QVBoxLayout(tab_container)

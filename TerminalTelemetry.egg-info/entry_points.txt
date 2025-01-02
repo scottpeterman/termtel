@@ -1,0 +1,5 @@
+[console_scripts]
+termtel-con = termtel.termtel:main
+
+[gui_scripts]
+termtel = termtel.termtel:main

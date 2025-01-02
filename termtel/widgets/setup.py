@@ -217,7 +217,8 @@ def setup_menus(window):
     # Replace telemetry dialog with simple toggle
     telemetry_action = view_menu.addAction("Show &Telemetry")
     telemetry_action.setCheckable(True)
-    telemetry_action.setChecked(True)  # Default to visible
+    saved_state = window.settings_manager.get_view_setting('telemetry_visible', True)
+    telemetry_action.setChecked(saved_state)
     telemetry_action.triggered.connect(lambda: toggle_telemetry(window, telemetry_action))
 
     # Tools Menu
@@ -236,7 +237,11 @@ def setup_menus(window):
 
 # Remove TelemetryDialog and show_telemetry_dialog since they're not needed anymore
 def toggle_telemetry(window, telemetry_action):
-    window.telemetry_frame.setVisible(telemetry_action.isChecked())
+    """Toggle telemetry frame visibility and save state"""
+    is_visible = telemetry_action.isChecked()
+    window.telemetry_frame.setVisible(is_visible)
+    # Save state to settings
+    window.settings_manager.set_view_setting('telemetry_visible', is_visible)
 def show_session_manager(window):
     """Launch the session manager dialog"""
     from termtel.widgets.session_editor import SessionEditorDialog

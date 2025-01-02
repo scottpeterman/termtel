@@ -1,0 +1,320 @@
+Metadata-Version: 2.1
+Name: TerminalTelemetry
+Version: 0.9.4
+Summary: Terminal Telemetry - A PyQt6 Terminal Emulator with Device Telemetry
+Home-page: https://github.com/scottpeterman/termtel
+Author: Scott Peterman
+Author-email: scottpeterman@gmail.com
+Project-URL: Bug Tracker, https://github.com/scottpeterman/termtel/issues
+Project-URL: Documentation, https://github.com/scottpeterman/termtel/wiki
+Keywords: terminal,telemetry,ssh,network,automation,pyqt6
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: annotated-types>=0.6.0
+Requires-Dist: anyio>=4.2.0
+Requires-Dist: backports.tarfile>=1.2.0
+Requires-Dist: bcrypt>=4.1.2
+Requires-Dist: bottle>=0.12.25
+Requires-Dist: certifi>=2024.8.30
+Requires-Dist: cffi>=1.17.1
+Requires-Dist: charset-normalizer>=3.4.0
+Requires-Dist: click>=8.1.7
+Requires-Dist: clr-loader>=0.2.6
+Requires-Dist: colorama>=0.4.6
+Requires-Dist: contourpy>=1.3.0
+Requires-Dist: cryptography>=41.0.7
+Requires-Dist: cycler>=0.12.1
+Requires-Dist: et_xmlfile>=2.0.0
+Requires-Dist: exceptiongroup>=1.2.0
+Requires-Dist: fastapi>=0.109.0
+Requires-Dist: Flask>=2.2.2
+Requires-Dist: fonttools>=4.55.2
+Requires-Dist: future>=1.0.0
+Requires-Dist: h11>=0.14.0
+Requires-Dist: httptools>=0.6.1
+Requires-Dist: idna>=3.6
+Requires-Dist: igraph>=0.10.8
+Requires-Dist: importlib_metadata>=8.5.0
+Requires-Dist: importlib_resources>=6.4.5
+Requires-Dist: itsdangerous>=2.2.0
+Requires-Dist: jaraco.classes>=3.4.0
+Requires-Dist: jaraco.context>=6.0.1
+Requires-Dist: jaraco.functools>=4.1.0
+Requires-Dist: Jinja2>=3.1.3
+Requires-Dist: junos-eznc>=2.7.2
+Requires-Dist: keyring>=25.5.0
+Requires-Dist: kiwisolver>=1.4.7
+Requires-Dist: ldap3>=2.9.1
+Requires-Dist: lxml>=5.3.0
+Requires-Dist: MarkupSafe>=2.1.3
+Requires-Dist: matplotlib>=3.9.3
+Requires-Dist: more-itertools>=10.5.0
+Requires-Dist: n2g>=0.3.3
+Requires-Dist: napalm>=5.0.0
+Requires-Dist: ncclient>=0.6.15
+Requires-Dist: netaddr>=1.3.0
+Requires-Dist: netmiko>=4.4.0
+Requires-Dist: netutils>=1.10.0
+Requires-Dist: networkx>=3.2.1
+Requires-Dist: ntc_templates>=7.4.0
+Requires-Dist: numpy>=2.0.2
+Requires-Dist: openpyxl>=3.1.5
+Requires-Dist: packaging>=24.1
+Requires-Dist: paramiko>=3.5.0
+Requires-Dist: passlib>=1.7.4
+Requires-Dist: pillow>=11.0.0
+Requires-Dist: proxy_tools>=0.1.0
+Requires-Dist: pyasn1>=0.6.1
+Requires-Dist: pycparser>=2.21
+Requires-Dist: pydantic>=2.5.3
+Requires-Dist: pydantic_core>=2.14.6
+Requires-Dist: pyeapi>=1.0.4
+Requires-Dist: PyJWT>=2.9.0
+Requires-Dist: PyNaCl>=1.5.0
+Requires-Dist: pynetbox>=7.4.0
+Requires-Dist: pynxos>=0.0.5
+Requires-Dist: pyparsing>=3.2.0
+Requires-Dist: PyQt6>=6.7.1
+Requires-Dist: PyQt6-Charts>=6.7.0
+Requires-Dist: PyQt6-Charts-Qt6>=6.7.3
+Requires-Dist: PyQt6-Qt6>=6.7.3
+Requires-Dist: PyQt6-WebEngine>=6.7.0
+Requires-Dist: PyQt6-WebEngine-Qt6>=6.7.3
+Requires-Dist: PyQt6-WebEngineSubwheel-Qt6>=6.7.3
+Requires-Dist: PyQt6_sip>=13.8.0
+Requires-Dist: pyserial>=3.5
+Requires-Dist: python-dateutil>=2.9.0.post0
+Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: python-igraph>=0.10.8
+Requires-Dist: python-multipart>=0.0.6
+Requires-Dist: pythonnet>=3.0.3
+Requires-Dist: pywebview>=4.4.1
+Requires-Dist: pywin32-ctypes>=0.2.3
+Requires-Dist: PyYAML>=6.0.1
+Requires-Dist: requests>=2.32.3
+Requires-Dist: scp>=0.15.0
+Requires-Dist: six>=1.17.0
+Requires-Dist: sniffio>=1.3.0
+Requires-Dist: starlette>=0.35.1
+Requires-Dist: svgwrite>=1.4.3
+Requires-Dist: textfsm>=1.1.3
+Requires-Dist: texttable>=1.7.0
+Requires-Dist: transitions>=0.9.2
+Requires-Dist: ttp>=0.9.5
+Requires-Dist: ttp-templates>=0.3.7
+Requires-Dist: typing_extensions>=4.9.0
+Requires-Dist: urllib3>=2.2.3
+Requires-Dist: uvicorn>=0.26.0
+Requires-Dist: watchfiles>=0.21.0
+Requires-Dist: websockets>=12.0
+Requires-Dist: Werkzeug>=3.1.3
+Requires-Dist: yamlordereddictloader>=0.4.2
+Requires-Dist: zipp>=3.21.0
+
+# TerminalTelemetry
+
+A modern, cyberpunk-inspired terminal emulator with integrated network device monitoring capabilities. This application combines terminal functionality with real-time network telemetry in a highly customizable interface.
+
+![TerminalTelemetry Interface](https://raw.githubusercontent.com/scottpeterman/termtel/main/docs/slides/slides1.gif
+)
+
+## Installation
+
+### From PyPI
+
+```bash
+pip install TerminalTelemetry
+```
+
+### From GitHub
+
+```bash
+git clone https://github.com/scottpeterman/termtel.git
+cd termtel
+pip install -r requirements.txt
+
+```
+
+#### to launch
+```commandline
+python -m termtel.termtel
+# or
+termtel
+```
+## Features
+
+- **Modern Terminal Emulator**
+  - Multi-session support with tabbed interface
+  - Customizable themes (Cyberpunk, Dark Mode, Light Mode, Retro Green, Retro Amber, Neon Blue)
+  - Session management and quick connect functionality
+  - Secure credential storage
+
+- **Network Device Telemetry**
+  - Real-time interface utilization monitoring with graphs
+  - Automatic device type detection
+  - LLDP/CDP neighbor discovery
+  - ARP table visualization
+  - Routing table analysis with prefix lookup
+  - Support for multiple network operating systems (Cisco IOS, Arista EOS, Cisco NXOS)
+
+- **Security Features**
+  - PBKDF2-HMAC-SHA256 key derivation (480,000 iterations)
+  - Fernet (AES-128-CBC) encryption with HMAC authentication
+  - Platform-specific secure storage locations
+  - Machine-specific binding
+  - Rate-limited authentication
+  - Cross-platform secure credential management
+  - Zero plaintext storage of sensitive data
+
+```mermaid
+flowchart TB
+    subgraph FileSystem ["File System Structure"]
+        direction TB
+        ConfigDir["Config Directory\n(.config/Termtel)"] --> SaltFile[".salt file\n(16 bytes random salt)"]
+        ConfigDir --> CredsFile["credentials.yaml"]
+        ConfigDir --> KeyringFile["System Keyring\n(machine_id)"]
+
+        subgraph CredsYAML ["credentials.yaml structure"]
+            direction TB
+            Root["Root"] --> LastMod["last_modified: ISO timestamp"]
+            Root --> CredsList["credentials: []"]
+            CredsList --> Cred1["Credential 1\n- host\n- port\n- username\n- encrypted_password\n- display_name\n- uuid"]
+            CredsList --> Cred2["Credential 2\n..."]
+        end
+    end
+
+    subgraph Encryption ["Encryption Process"]
+        direction TB
+        SaveCred["Save Credentials"] --> CheckLock{"Is Unlocked?"}
+        CheckLock -->|No| Error["Raise Error"]
+        CheckLock -->|Yes| Process["Process Each Credential"]
+        Process --> CopyDict["Create Copy of Credential Dict"]
+        CopyDict --> CheckPW{"Has Password?"}
+        CheckPW -->|No| AddToList["Add to Encrypted List"]
+        CheckPW -->|Yes| EncryptPW["Encrypt Password\n(Fernet)"]
+        EncryptPW --> Store["Store as UTF-8"]
+        Store --> AddToList
+        AddToList --> DumpYAML["Dump to YAML"]
+    end
+
+    subgraph Decryption ["Decryption Process"]
+        direction TB
+        LoadCred["Load Credentials"] --> VerifyLock{"Is Unlocked?"}
+        VerifyLock -->|No| LoadError["Raise Error"]
+        VerifyLock -->|Yes| ReadYAML["Read YAML File"]
+        ReadYAML --> ProcessCreds["Process Each Credential"]
+        ProcessCreds --> CopyCred["Create Copy of Credential"]
+        CopyCred --> CheckEncPW{"Has Encrypted\nPassword?"}
+        CheckEncPW -->|No| AddDecList["Add to Decrypted List"]
+        CheckEncPW -->|Yes| DecryptPW["Decrypt Password\n(Fernet)"]
+        DecryptPW --> UTF8["Convert to UTF-8"]
+        UTF8 --> AddDecList
+    end
+
+    subgraph KeyManagement ["Key Management"]
+        direction TB
+        MasterPW["Master Password"] --> PBKDF2["PBKDF2-HMAC-SHA256\n(480000 iterations)"]
+        Salt[".salt file"] --> PBKDF2
+        PBKDF2 --> DerivedKey["32-byte Derived Key"]
+        DerivedKey --> FernetKey["Fernet Instance"]
+    end
+
+    KeyManagement -.-> Encryption
+    KeyManagement -.-> Decryption
+    Encryption --> FileSystem
+    FileSystem --> Decryption
+```
+
+
+### Requirements
+
+- Python 3.9 or higher
+- PyQt6
+- Additional dependencies will be automatically installed
+
+## Usage
+
+After installation, you can launch TerminalTelemetry using either of these commands:
+
+```bash
+# Launch with console
+termtel
+
+```
+
+### First Time Setup
+
+1. When first launched, you'll be prompted to create a master password for secure credential storage
+   - The master password is used with PBKDF2 key derivation
+   - A unique salt is generated and stored securely
+   - Credentials are encrypted using Fernet (AES-128-CBC)
+
+2. Credentials are stored securely based on your platform:
+   - Windows: Uses APPDATA directory and MachineGuid
+   - macOS: Uses Application Support directory and hardware serial
+   - Linux: Uses .config directory and machine-id
+
+3. Connect to devices using the connection panel
+   - Credentials are encrypted at rest
+   - Session data is protected in memory
+   - Machine-specific binding prevents credential theft
+
+### Theme Selection
+
+The application supports multiple themes which can be selected from the menu:
+- Cyberpunk (Default)
+- Dark Mode
+- Light Mode
+- Retro Green
+- Retro Amber
+- Neon Blue
+
+## Development
+
+To set up a development environment:
+
+```bash
+git clone https://github.com/scottpeterman/termtel.git
+cd termtel
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -e .[dev]
+```
+
+### Security Considerations for Development
+
+When contributing, ensure:
+1. All cryptographic operations use approved algorithms
+2. Platform-specific code is properly isolated
+3. Error handling follows security best practices
+4. Regular security audits are performed
+5. Dependencies are kept updated
+
+## Configuration
+
+The application stores its configuration in platform-specific locations:
+
+```
+Windows: %APPDATA%/TerminalTelemetry/
+macOS: ~/Library/Application Support/TerminalTelemetry/
+Linux: ~/.config/TerminalTelemetry/
+```
+
+## License
+
+This project is licensed under the GNU General Public License v3 (GPLv3).
+
+## Author
+
+Scott Peterman (github.com/scottpeterman)
+
+## Acknowledgments
+
+- PyQt6 for the GUI framework
+- NAPALM for network device interaction
+- paramiko for all things SSH
+- TextFSM, thanks for the templates
+- The open-source community for various supporting libraries

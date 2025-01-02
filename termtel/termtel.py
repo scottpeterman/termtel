@@ -353,6 +353,10 @@ class TermtelWindow(QMainWindow):
         telemetry_layout.addWidget(self.telemetry)
         self.main_splitter.addWidget(self.telemetry_frame)
 
+        # Set initial telemetry visibility from settings
+        telemetry_visible = self.settings_manager.get_view_setting('telemetry_visible', True)
+        self.telemetry_frame.setVisible(telemetry_visible)
+
         # Set proportions
         self.main_splitter.setSizes([int(width * 0.6), int(width * 0.4)])
         self.terminal_splitter.setSizes([250, width - 250])

@@ -14,6 +14,9 @@ DEFAULT_SETTINGS = {
     'themes': {
         'app_theme': 'cyberpunk',  # Default app theme
         'term_theme': 'Cyberpunk'  # Default terminal theme
+    },
+'view_settings': {  # New section for view settings
+        'telemetry_visible': True
     }
 }
 
@@ -48,7 +51,11 @@ class SettingsManager:
                     loaded_settings = yaml.safe_load(f) or {}
                     # Merge with defaults to ensure all required settings exist
                     self._settings = DEFAULT_SETTINGS.copy()
+                    # Update themes section
                     self._settings['themes'].update(loaded_settings.get('themes', {}))
+                    # Update view_settings section
+                    if 'view_settings' in loaded_settings:
+                        self._settings['view_settings'].update(loaded_settings.get('view_settings', {}))
             else:
                 logger.info("No settings file found, creating with defaults")
                 self._settings = DEFAULT_SETTINGS.copy()
@@ -63,6 +70,7 @@ class SettingsManager:
         try:
             with open(self.settings_path, 'w') as f:
                 yaml.safe_dump(self._settings, f, default_flow_style=False)
+                print(self._settings)
             return True
         except Exception as e:
             logger.error(f"Failed to save settings: {e}")
@@ -98,7 +106,29 @@ class SettingsManager:
         """Reset all settings to defaults."""
         try:
             self._settings = DEFAULT_SETTINGS.copy()
+
             return self.save_settings()
         except Exception as e:
             logger.error(f"Failed to reset settings: {e}")
             return False
+
+    def get_view_setting(self, key: str, default: any = None) -> any:
+        """Get a view-related setting."""
+        try:
+            return self._settings.get('view_settings', {}).get(key, default)
+        except Exception as e:
+            logger.error(f"Failed to get view setting {key}: {e}")
+            return default
+
+    def set_view_setting(self, key: str, value: any) -> bool:
+        """Set a view-related setting."""
+        try:
+            # Ensure view_settings section exists
+            if 'view_settings' not in self._settings:
+                self._settings['view_settings'] = {}
+            self._settings['view_settings'][key] = value
+            return self.save_settings()
+        except Exception as e:
+            logger.error(f"Failed to set view setting {key}: {e}")
+            return False
+
